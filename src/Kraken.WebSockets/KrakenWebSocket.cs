@@ -14,24 +14,33 @@ namespace Kraken.WebSockets
     /// <summary>
     /// Kraken websocket.
     /// </summary>
-    public sealed class KrakenWebSocket
+    public sealed class KrakenWebSocket : IKrakenSocket
     {
         private static readonly ILogger logger = Log.ForContext<KrakenWebSocket>();
         private static readonly Encoding DEFAULT_ENCODING = Encoding.UTF8;
 
         private ClientWebSocket webSocket;
         private readonly string uri;
+        private readonly IKrakenMessageSerializer serializer;
 
+        /// <summary>
+        /// Occurs when connected.
+        /// </summary>
         public event EventHandler Connected;
+
+        /// <summary>
+        /// Occurs when data received.
+        /// </summary>
         public event EventHandler<KrakenMessageEventArgs> DataReceived;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenWebsocket"/> class.
         /// </summary>
         /// <param name="uri">URI.</param>
-        public KrakenWebSocket(string uri)
+        public KrakenWebSocket(string uri, IKrakenMessageSerializer serializer)
         {
             this.uri = uri;
+            this.serializer = serializer;
             webSocket = new ClientWebSocket();
         }
 
@@ -66,23 +75,21 @@ namespace Kraken.WebSockets
         {
             if (webSocket.State == WebSocketState.Open)
             {
-                var jsonMessage = JsonConvert.SerializeObject(message, new JsonSerializerSettings()
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                });
+                var jsonMessage = serializer.Serialize(message);
                 logger.Verbose("Trying to send: {message}", jsonMessage);
 
                 var messageBytes = DEFAULT_ENCODING.GetBytes(jsonMessage);
                 await webSocket.SendAsync(
-                    new ArraySegment<byte>(messageBytes), 
-                    WebSocketMessageType.Text, 
-                    true, 
+                    new ArraySegment<byte>(messageBytes),
+                    WebSocketMessageType.Text,
+                    true,
                     CancellationToken.None);
                 logger.Verbose("Successfully sent: {message}", jsonMessage);
                 return;
             }
 
-            logger.Warning("WebSocket is not open. Current state: {state}", webSocket.State);
+            logger.Warning("WebSocket is not open. Current state: {state}",
+                webSocket.State);
         }
 
         /// <summary>
@@ -93,7 +100,10 @@ namespace Kraken.WebSockets
         {
             if (webSocket.State == WebSocketState.Open)
             {
-                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Connection closed by consumer", CancellationToken.None);
+                await webSocket.CloseAsync(
+                    WebSocketCloseStatus.NormalClosure,
+                    "Connection closed by consumer",
+                    CancellationToken.None);
             }
         }
 
@@ -132,7 +142,7 @@ namespace Kraken.WebSockets
                     logger.Debug("Received new message from websocket");
                     logger.Verbose("Received: {message}", message);
 
-                    InvokeDataReceived(new KrakenMessageEventArgs(message));
+                    InvokeDataReceived(new KrakenMessageEventArgs(message, serializer));
                 }
             }
             catch (Exception ex)

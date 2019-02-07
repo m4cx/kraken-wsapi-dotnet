@@ -21,6 +21,7 @@
   <ItemGroup>
     <Folder Include="Messages\" />
     <Folder Include="Events\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".DS_Store" />

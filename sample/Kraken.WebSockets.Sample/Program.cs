@@ -9,7 +9,6 @@ namespace Kraken.WebSockets.Sample
     {
         private static readonly ILogger logger = Log.ForContext<Program>();
 
-        static object consoleLock = new object();
         static KrakenWebSocket kraken;
 
         static void Main(string[] args)
@@ -36,7 +35,10 @@ namespace Kraken.WebSockets.Sample
         private static async Task RunKraken()
         {
             var uri = "wss://ws-sandbox.kraken.com";
-            kraken = new KrakenWebSocket(uri);
+            kraken = new KrakenWebSocket(uri, new KrakenMessageSerializer());
+
+            var client = new KrakenApiClient(kraken);
+            client.SystemStatusChanged += (sender, e) => logger.Information("System status changed: {systemStatus}", e.Message);
             await kraken.ConnectAsync();
 
             kraken.DataReceived += (object sender, Events.KrakenMessageEventArgs e) => 
