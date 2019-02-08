@@ -15,7 +15,7 @@ namespace Kraken.WebSockets.Sample
         {
             // Configure logging
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Verbose()
                 .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
@@ -35,9 +35,10 @@ namespace Kraken.WebSockets.Sample
         private static async Task RunKraken()
         {
             var uri = "wss://ws-sandbox.kraken.com";
-            kraken = new KrakenWebSocket(uri, new KrakenMessageSerializer());
+            var serializer = new KrakenMessageSerializer();
+            kraken = new KrakenWebSocket(uri, serializer);
 
-            var client = new KrakenApiClient(kraken);
+            var client = new KrakenApiClient(kraken, serializer);
             client.SystemStatusChanged += (sender, e) => logger.Information("System status changed: {systemStatus}", e.Message);
             await kraken.ConnectAsync();
 

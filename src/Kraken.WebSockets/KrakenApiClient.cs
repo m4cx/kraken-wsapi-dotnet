@@ -14,6 +14,7 @@ namespace Kraken.WebSockets
         private static readonly ILogger logger = Log.ForContext<KrakenApiClient>();
 
         private readonly IKrakenSocket socket;
+        private readonly IKrakenMessageSerializer serializer;
 
         /// <summary>
         /// Gets the system status.
@@ -30,25 +31,31 @@ namespace Kraken.WebSockets
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient"/> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
-        public KrakenApiClient(IKrakenSocket socket)
+        public KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
         {
             this.socket = socket ?? throw new ArgumentNullException(nameof(socket));
+            this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
             // Add watch for incoming messages 
-            this.socket.DataReceived += (sender, e) =>
-            {
-                // handle 'systemStatus' event
-                var eventType = e.GetMessage<KrakenMessage>();
-                if (eventType.Event == "systemStatus")
-                {
-                    var systemStatus = e.GetMessage<SystemStatus>();
-                    logger.Verbose("System status changed: {systemStatus}", systemStatus);
-                    SystemStatus = systemStatus;
-                    SystemStatusChanged.InvokeAll(this, systemStatus);
-                }
-            };
+            this.socket.DataReceived += HandleIncomingMessage;
         }
 
+        #region Private Helper
 
+        private void HandleIncomingMessage(object sender, KrakenMessageEventArgs eventArgs)
+        {
+            logger.Debug("Handling incomming message");
+
+            // handle 'systemStatus' event
+            if (eventArgs.Event == "systemStatus")
+            {
+                var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
+                logger.Verbose("System status changed: {@systemStatus}", systemStatus);
+                SystemStatus = systemStatus;
+                SystemStatusChanged.InvokeAll(this, systemStatus);
+            }
+        }
+
+        #endregion
     }
 }

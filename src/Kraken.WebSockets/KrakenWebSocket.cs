@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 
@@ -142,7 +143,14 @@ namespace Kraken.WebSockets
                     logger.Debug("Received new message from websocket");
                     logger.Verbose("Received: {message}", message);
 
-                    InvokeDataReceived(new KrakenMessageEventArgs(message, serializer));
+                    string eventString = null;
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        var messageObj = JObject.Parse(message);
+                        eventString = (string)messageObj.GetValue("event");
+                    }
+
+                    InvokeDataReceived(new KrakenMessageEventArgs(eventString, message));
                 }
             }
             catch (Exception ex)
