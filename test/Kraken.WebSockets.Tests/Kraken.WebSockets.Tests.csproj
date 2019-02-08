@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -12,10 +12,12 @@
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="coverlet.msbuild" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Events\" />
+    <Folder Include="Messages\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Kraken.WebSockets\Kraken.WebSockets.csproj" />
