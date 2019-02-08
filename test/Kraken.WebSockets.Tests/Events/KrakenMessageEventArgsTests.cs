@@ -1,48 +1,29 @@
-﻿using System;
-using Kraken.WebSockets.Events;
+﻿using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
+using Moq;
 using Xunit;
 
 namespace Kraken.WebSockets.Tests.Events
 {
     public class KrakenMessageEventArgsTests
     {
+        private readonly string eventString;
         private readonly string testJson;
         private KrakenMessageEventArgs instance;
 
-        #region TestMessage
-
-        private class TestMessage : KrakenMessage
-        {
-            public TestMessage() : base("Test")
-            {
-            }
-        }
-
-        #endregion
-
         public KrakenMessageEventArgsTests()
         {
+            eventString = "Test";
             testJson = @"{""event"":""Test""}";
-            instance = new KrakenMessageEventArgs(testJson);
+            instance = new KrakenMessageEventArgs(eventString, testJson);
         }
 
         #region Ctor
 
         [Fact]
-        public void Ctor_RawContentNull_ThrowsArgumentNullException()
+        public void Ctor_Default_InstanceIsNotNull()
         {
-            Assert.Equal("rawContent",
-                Assert.Throws<ArgumentNullException>(() => 
-                    new KrakenMessageEventArgs(null)).ParamName);
-        }
-
-        [Fact]
-        public void Ctor_RawContentEmptyString_ThrowsArgumentOutOfRangeException()
-        {
-            Assert.Equal("rawContent",
-                Assert.Throws<ArgumentOutOfRangeException>(() =>
-                    new KrakenMessageEventArgs(string.Empty)).ParamName);
+            Assert.NotNull(instance);
         }
 
         #endregion
@@ -53,6 +34,16 @@ namespace Kraken.WebSockets.Tests.Events
         public void RawContent_Get_ReturnsRawValueSet()
         {
             Assert.Equal(testJson, instance.RawContent);
+        }
+
+        #endregion
+
+        #region RawContent
+
+        [Fact]
+        public void Event_Get_ReturnsRawValueSet()
+        {
+            Assert.Equal(eventString, instance.Event);
         }
 
         #endregion
