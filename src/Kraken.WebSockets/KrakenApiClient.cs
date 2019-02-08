@@ -33,10 +33,12 @@ namespace Kraken.WebSockets
         /// <param name="socket">Socket.</param>
         public KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
         {
+            logger.Verbose("Creating a new client instance");
             this.socket = socket ?? throw new ArgumentNullException(nameof(socket));
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
             // Add watch for incoming messages 
+            logger.Verbose("Applying incoming message handler");
             this.socket.DataReceived += HandleIncomingMessage;
         }
 
@@ -44,16 +46,18 @@ namespace Kraken.WebSockets
 
         private void HandleIncomingMessage(object sender, KrakenMessageEventArgs eventArgs)
         {
-            logger.Debug("Handling incomming message");
+            logger.Debug("Handling incoming '{event}' message", eventArgs.Event);
 
             // handle 'systemStatus' event
-            if (eventArgs.Event == "systemStatus")
+            if (eventArgs.Event != "systemStatus")
             {
-                var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
-                logger.Verbose("System status changed: {@systemStatus}", systemStatus);
-                SystemStatus = systemStatus;
-                SystemStatusChanged.InvokeAll(this, systemStatus);
+                return;
             }
+
+            var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
+            logger.Verbose("System status changed: {@systemStatus}", systemStatus);
+            SystemStatus = systemStatus;
+            SystemStatusChanged.InvokeAll(this, systemStatus);
         }
 
         #endregion

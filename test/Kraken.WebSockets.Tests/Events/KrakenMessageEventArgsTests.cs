@@ -1,10 +1,10 @@
-﻿using Kraken.WebSockets.Events;
-using Kraken.WebSockets.Messages;
-using Moq;
+﻿using System.Diagnostics.CodeAnalysis;
+using Kraken.WebSockets.Events;
 using Xunit;
 
 namespace Kraken.WebSockets.Tests.Events
 {
+    [ExcludeFromCodeCoverage]
     public class KrakenMessageEventArgsTests
     {
         private readonly string eventString;
