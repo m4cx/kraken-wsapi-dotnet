@@ -48,7 +48,7 @@ namespace Kraken.WebSockets.Sample
             int requestId = 1;
             while (true)
             {
-                await kraken.SendAsync(new PingMessage(requestId++));
+                await kraken.SendAsync(new Ping(requestId++));
                 await Task.Delay(5000);
             }
         }

@@ -6,20 +6,21 @@ namespace Kraken.WebSockets.Extensions
 {
     public static class EventHandlerExtensions
     {
+        /// <summary>
+        /// Invokes all registered event handlers.
+        /// </summary>
+        /// <param name="eventHandler">Event handler.</param>
+        /// <param name="sender">Sender.</param>
+        /// <param name="message">Message.</param>
+        /// <typeparam name="TMessage">The 1st type parameter.</typeparam>
         public static void InvokeAll<TMessage>(this EventHandler<KrakenMessageEventArgs<TMessage>> eventHandler, object sender, TMessage message)
             where TMessage : IKrakenMessage, new()
         {
-            var instance = eventHandler;
-            if (instance != null)
+            var invocationList = eventHandler?.GetInvocationList();
+            if (invocationList == null) return;
+            foreach (var handler in invocationList)
             {
-                var handlers = instance.GetInvocationList();
-                if (handlers != null)
-                {
-                    foreach (var handler in handlers)
-                    {
-                        handler.DynamicInvoke(sender, new KrakenMessageEventArgs<TMessage>(message));
-                    }
-                }
+                handler.DynamicInvoke(sender, new KrakenMessageEventArgs<TMessage>(message));
             }
         }
     }

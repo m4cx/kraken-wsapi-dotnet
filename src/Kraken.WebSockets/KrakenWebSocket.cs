@@ -5,9 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using Serilog;
 
 namespace Kraken.WebSockets
@@ -72,11 +70,11 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
-        public async Task SendAsync(KrakenMessage message)
+        public async Task SendAsync<TKrakenMessage>(TKrakenMessage message) where TKrakenMessage : IKrakenMessage, new()
         {
             if (webSocket.State == WebSocketState.Open)
             {
-                var jsonMessage = serializer.Serialize(message);
+                var jsonMessage = serializer.Serialize<TKrakenMessage>(message);
                 logger.Verbose("Trying to send: {message}", jsonMessage);
 
                 var messageBytes = DEFAULT_ENCODING.GetBytes(jsonMessage);
@@ -127,9 +125,11 @@ namespace Kraken.WebSockets
 
                         if (result.MessageType == WebSocketMessageType.Close)
                         {
+                            logger.Information("Closing connection to socket");
                             await
                                 webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                            // Disconnected-Event
+                            logger.Information("Connection successfully closed");
+                            // TODO: Disconnected-Event
                         }
                         else
                         {
@@ -156,7 +156,7 @@ namespace Kraken.WebSockets
             catch (Exception ex)
             {
                 logger.Error(ex, "Error while listenening or reading new messages from WebSocket");
-                // Disconnected-Event
+                // TODO: Disconnected-Event
                 throw;
             }
             finally
