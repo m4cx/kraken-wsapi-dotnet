@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
 using System.Diagnostics.CodeAnalysis;
 using Kraken.WebSockets.Messages;
 using Xunit;
@@ -25,12 +23,15 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Equal("message",
             Assert.Throws<ArgumentNullException>(() => instance.Serialize<KrakenMessage>(null)).ParamName);
         }
-        
+
         [Fact]
-        public void Serialize_PingMessage_ReturnsPingMessageJson()
-        {
+        public void Serialize_PingMessage_ReturnsPingMessageJson() => 
             Assert.Equal(TestSocketMessages.PingMessage, instance.Serialize(TestSocketMessages.Ping));
-        }
+
+        [Fact]
+        public void Serialize_SubsribeMessage_ReturnsSubscribeJsonWithoutNullvalues() => 
+            Assert.Equal(@"{""pair"":[""XBT/EUR""],""subscription"":{""name"":""*""},""event"":""subscribe""}", 
+                instance.Serialize(new Subscribe(new string[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All))));
 
         #endregion
 
@@ -58,6 +59,17 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Equal(TestSocketMessages.SystemStatus.Status, result.Status);
             Assert.Equal(TestSocketMessages.SystemStatus.Version, result.Version);
             Assert.Equal(TestSocketMessages.SystemStatus.ConnectionId, result.ConnectionId);
+        }
+
+        [Fact]
+        public void Deserialize_SubscriptionStatus1_ReturnsExpectedObjectStructure()
+        {
+            var result = instance.Deserialize<SubscriptionStatus>(TestSocketMessages.SubscriptionStatus1Message);
+            Assert.Equal(TestSocketMessages.SubscriptionStatus1.Event, result.Event);
+            Assert.Equal(TestSocketMessages.SubscriptionStatus1.Status, result.Status);
+            Assert.Equal(TestSocketMessages.SubscriptionStatus1.Pair, result.Pair);
+            Assert.Equal(TestSocketMessages.SubscriptionStatus1.ChannelId, result.ChannelId);
+
         }
 
         #endregion

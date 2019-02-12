@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Events\" />
-    <Folder Include="Messages\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Kraken.WebSockets\Kraken.WebSockets.csproj" />

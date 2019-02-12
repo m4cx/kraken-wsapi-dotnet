@@ -14,12 +14,6 @@ namespace Kraken.WebSockets.Messages
         [JsonProperty(Order = 0)]
         public string Event { get; private set; }
 
-        [JsonConstructor]
-        private KrakenMessage()
-        {
-
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenMessage"/> class.
         /// </summary>

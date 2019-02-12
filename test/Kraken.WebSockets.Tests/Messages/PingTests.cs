@@ -1,8 +1,10 @@
 ﻿using Kraken.WebSockets.Messages;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace Kraken.WebSockets.Tests.Messages
 {
+    [ExcludeFromCodeCoverage]
     public class PingTests
     {
         #region Ctor
