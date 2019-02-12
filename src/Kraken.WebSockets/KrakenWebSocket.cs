@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -18,7 +19,7 @@ namespace Kraken.WebSockets
         private static readonly ILogger logger = Log.ForContext<KrakenWebSocket>();
         private static readonly Encoding DEFAULT_ENCODING = Encoding.UTF8;
 
-        private ClientWebSocket webSocket;
+        private readonly ClientWebSocket webSocket;
         private readonly string uri;
         private readonly IKrakenMessageSerializer serializer;
 
@@ -38,8 +39,8 @@ namespace Kraken.WebSockets
         /// <param name="uri">URI.</param>
         public KrakenWebSocket(string uri, IKrakenMessageSerializer serializer)
         {
-            this.uri = uri;
-            this.serializer = serializer;
+            this.uri = uri ?? throw new ArgumentNullException(nameof(uri));
+            this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             webSocket = new ClientWebSocket();
         }
 
@@ -52,6 +53,7 @@ namespace Kraken.WebSockets
             try
             {
                 logger.Information("Trying to connect to '{uri}'", uri);
+
                 await webSocket.ConnectAsync(new Uri(uri), CancellationToken.None);
                 InvokeConnected();
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -70,7 +72,7 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
-        public async Task SendAsync<TKrakenMessage>(TKrakenMessage message) where TKrakenMessage : IKrakenMessage, new()
+        public async Task SendAsync<TKrakenMessage>(TKrakenMessage message) where TKrakenMessage : IKrakenMessage
         {
             if (webSocket.State == WebSocketState.Open)
             {
@@ -143,14 +145,21 @@ namespace Kraken.WebSockets
                     logger.Debug("Received new message from websocket");
                     logger.Verbose("Received: {message}", message);
 
-                    string eventString = null;
+                    JToken eventString = null;
                     if (!string.IsNullOrEmpty(message))
                     {
-                        var messageObj = JObject.Parse(message);
-                        eventString = (string)messageObj.GetValue("event");
+                        try
+                        {
+                            var messageObj = JObject.Parse(message);
+                            eventString = (string)messageObj.GetValue("event");
+                        }
+                        catch(JsonReaderException)
+                        {
+                            logger.Verbose("Message is no event, just data");
+                        }
                     }
 
-                    InvokeDataReceived(new KrakenMessageEventArgs(eventString, message));
+                    InvokeDataReceived(new KrakenMessageEventArgs((string)eventString, message));
                 }
             }
             catch (Exception ex)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
@@ -31,7 +31,7 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
-        Task SendAsync<TKrakenMessage>(TKrakenMessage message) where TKrakenMessage : IKrakenMessage, new();
+        Task SendAsync<TKrakenMessage>(TKrakenMessage message) where TKrakenMessage : IKrakenMessage;
 
         /// <summary>
         /// Closes the websocket.

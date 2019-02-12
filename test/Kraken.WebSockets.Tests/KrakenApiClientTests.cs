@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
 using Moq;
@@ -26,21 +27,39 @@ namespace Kraken.WebSockets.Tests
         [Fact]
         public void Ctor_SocketNull_ThrowsArgumentNullException()
         {
-            Assert.Equal("socket", 
+            Assert.Equal("socket",
                 Assert.Throws<ArgumentNullException>(
                     () => new KrakenApiClient(null, serializer.Object)).ParamName);
         }
-        
+
         [Fact]
         public void Ctor_SerializerNull_ThrowsArgumentNullException()
         {
-            Assert.Equal("serializer", 
+            Assert.Equal("serializer",
                 Assert.Throws<ArgumentNullException>(
                     () => new KrakenApiClient(socket.Object, null)).ParamName);
         }
 
         #endregion
-        
+
+        #region SubscribeAsync()
+
+        [Fact]
+        public async Task SubscribeAsync_SubscribeNull_ThrowsArgumentNullException()
+        {
+            Assert.Equal("subscribe", (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.SubscribeAsync(null))).ParamName);
+        }
+
+        [Fact]
+        public async Task SubscribeAsync_WithSubscribe_SubscribeIsPassedToSocket()
+        {
+            var subscribe = new Subscribe(new string[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All));
+            await instance.SubscribeAsync(subscribe);
+            socket.Verify( mock => mock.SendAsync(It.Is<Subscribe>(x => x == subscribe)), Times.Once);
+        }
+
+        #endregion
+
         #region SystemStatus
 
         [Fact]
@@ -51,17 +70,41 @@ namespace Kraken.WebSockets.Tests
 
         [Fact]
         public void SystemStatus_Get_AfterMessageReceivedReturnsSentValue()
-        {   
+        {
             serializer
                 .Setup(x => x.Deserialize<SystemStatus>(It.Is<string>(y => y == TestSocketMessages.SystemStatusMessage)))
                 .Returns(TestSocketMessages.SystemStatus);
-            
+
             socket.Raise(x => x.DataReceived += null,
-                new KrakenMessageEventArgs("systemStatus", TestSocketMessages.SystemStatusMessage));
-            
+                new KrakenMessageEventArgs(SystemStatus.EventName, TestSocketMessages.SystemStatusMessage));
+
             Assert.Equal(TestSocketMessages.SystemStatus, instance.SystemStatus);
         }
+
+        #endregion
+
+        #region SubscriptionStatus
+
+        [Fact]
+        public void SubscriptionStatus_Get_AtStartup_ReturnsEmptyDictionary()
+        {
+            Assert.Empty(instance.Subscriptions);
+        }
+
+        [Fact]
+        public void SubscriptionStatus_Get_AfterMessageReceived_ReturnsSingleSubscription()
+        {
+            serializer
+                .Setup(x => x.Deserialize<SubscriptionStatus>(It.Is<string>(y => y == TestSocketMessages.SubscriptionStatus1Message)))
+                .Returns(TestSocketMessages.SubscriptionStatus1);
+
+            socket.Raise(x => x.DataReceived += null, new KrakenMessageEventArgs(SubscriptionStatus.EventName, TestSocketMessages.SubscriptionStatus1Message));
+            
+            Assert.Equal(1, instance.Subscriptions.Count);
+        }
         
+        
+
         #endregion
     }
 }
