@@ -43,5 +43,14 @@ namespace Kraken.WebSockets.Tests
             @"{""channelID"":123,""event"":""subscriptionStatus"",""pair"":""XBT/EUR"",""status"":""subscribed""}";
 
         #endregion
+
+        #region UnsubscribeChannelId
+
+        public static readonly Unsubscribe UnsubscribeChannelId = new Unsubscribe(123);
+
+        public const string UnsubscribeChannelIdMessage =
+            @"{""channelID"":123,""event"":""unsubscribe""}";
+
+        #endregion
     }
 }

@@ -8,11 +8,11 @@ namespace Kraken.WebSockets.Messages
         /// <summary>
         /// The subscribe.
         /// </summary>
-        public const string Subscribe = "subscribe";
+        public const string Subscribe = "subscribed";
         /// <summary>
         /// The unsubscribe.
         /// </summary>
-        public const string Unsubscribe = "unsubscribe";
+        public const string Unsubscribe = "unsubscribed";
         /// <summary>
         /// The error.
         /// </summary>
