@@ -45,12 +45,7 @@ namespace Kraken.WebSockets.Sample
             kraken.DataReceived += (object sender, Events.KrakenMessageEventArgs e) => 
                 logger.Information("Received message: {message}", e.RawContent); ;
 
-            int requestId = 1;
-            while (true)
-            {
-                await kraken.SendAsync(new Ping(requestId++));
-                await Task.Delay(5000);
-            }
+            await client.SubscribeAsync(new Subscribe(new[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All)));
         }
     }
 }

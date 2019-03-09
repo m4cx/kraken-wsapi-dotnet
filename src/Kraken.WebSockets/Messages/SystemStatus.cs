@@ -2,8 +2,16 @@
 
 namespace Kraken.WebSockets.Messages
 {
+    /// <summary>
+    /// System status.
+    /// </summary>
     public class SystemStatus : IKrakenMessage
     {
+        /// <summary>
+        /// The name of the event.
+        /// </summary>
+        public const string EventName = "systemStatus";
+
         [JsonProperty("connectionID")]
         public decimal ConnectionId { get; internal set; }
 
