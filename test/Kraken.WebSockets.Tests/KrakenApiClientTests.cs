@@ -99,7 +99,21 @@ namespace Kraken.WebSockets.Tests
             socket.Raise(x => x.DataReceived += null, new KrakenMessageEventArgs(SubscriptionStatus.EventName, TestSocketMessages.SubscriptionStatus1Message));
             
             Assert.Equal(1, instance.Subscriptions.Count);
+            Assert.Equal(TestSocketMessages.SubscriptionStatus1, instance.Subscriptions[TestSocketMessages.SubscriptionStatus1.ChannelId.Value]);
         }
+
+        [Fact]
+        public void SubscriptionStatus_Get_AfterMessageWithoutChannelIdReceived_ReturnsNoSubscription()
+        {
+            serializer
+                .Setup(x => x.Deserialize<SubscriptionStatus>(It.Is<string>(y => y == TestSocketMessages.SubScriptionStatusNoChannelIdMessage)))
+                .Returns(TestSocketMessages.SubScriptionStatusNoChannelId);
+
+            socket.Raise(x => x.DataReceived += null, new KrakenMessageEventArgs(SubscriptionStatus.EventName, TestSocketMessages.SubScriptionStatusNoChannelIdMessage));
+
+            Assert.Equal(0, instance.Subscriptions.Count);
+        }
+
 
         #endregion
 
