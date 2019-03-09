@@ -44,6 +44,20 @@ namespace Kraken.WebSockets.Tests
 
         #endregion
 
+        #region SubScriptionStatusNoChannelId
+
+        public static readonly SubscriptionStatus SubScriptionStatusNoChannelId = new SubscriptionStatus
+        {
+            Pair = "XBT/EUR",
+            Status = "subscribed"
+        };
+
+        public const string SubScriptionStatusNoChannelIdMessage =
+            @"{""event"":""subscriptionStatus"",""pair"":""XBT/EUR"",""status"":""subscribed""}";
+
+
+        #endregion
+
         #region UnsubscribeChannelId
 
         public static readonly Unsubscribe UnsubscribeChannelId = new Unsubscribe(123);
