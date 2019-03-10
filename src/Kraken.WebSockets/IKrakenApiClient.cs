@@ -6,6 +6,9 @@ using Kraken.WebSockets.Messages;
 
 namespace Kraken.WebSockets
 {
+    /// <summary>
+    /// This interface describes the client for the Kraken WebSocket API
+    /// </summary>
     public interface IKrakenApiClient
     {
         /// <summary>
@@ -30,6 +33,18 @@ namespace Kraken.WebSockets
         /// </summary>
         event EventHandler<KrakenMessageEventArgs<SubscriptionStatus>> SubscriptionStatusChanged;
 
+        /// <summary>
+        /// Creates a subscription.
+        /// </summary>
+        /// <param name="subscribe">The subscription.</param>
+        /// <returns></returns>
         Task SubscribeAsync(Subscribe subscribe);
+
+        /// <summary>
+        /// Unsubscribe from a specific subscription.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <returns></returns>
+        Task UnsubscribeAsync(int channelId);
     }
 }

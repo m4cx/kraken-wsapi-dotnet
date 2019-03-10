@@ -42,8 +42,15 @@ namespace Kraken.WebSockets.Sample
             client.SystemStatusChanged += (sender, e) => logger.Information("System status changed: {systemStatus}", e.Message);
             await kraken.ConnectAsync();
 
-            kraken.DataReceived += (object sender, Events.KrakenMessageEventArgs e) => 
-                logger.Information("Received message: {message}", e.RawContent); ;
+
+            client.SubscriptionStatusChanged += async (sender, e) =>
+            {
+                if (e.Message.Status == SubscriptionStatusNames.Subscribe && e.Message.ChannelId.HasValue)
+                {
+                    await Task.Delay(5000);
+                    await client.UnsubscribeAsync(e.Message.ChannelId.Value);
+                }
+            };
 
             await client.SubscribeAsync(new Subscribe(new[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All)));
         }

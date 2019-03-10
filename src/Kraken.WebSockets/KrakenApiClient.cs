@@ -41,10 +41,15 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenMessageEventArgs<SubscriptionStatus>> SubscriptionStatusChanged;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient"/> class.
+        /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
         /// <param name="serializer">Serializer.</param>
+        /// <exception cref="ArgumentNullException">
+        /// socket
+        /// or
+        /// serializer
+        /// </exception>
         public KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
         {
             logger.Debug("Creating a new client instance");
@@ -57,10 +62,11 @@ namespace Kraken.WebSockets
         }
 
         /// <summary>
-        /// Subscribes the async.
+        /// Creates a subscription.
         /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="subscribe">Subscribe.</param>
+        /// <param name="subscribe">The subscription.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">subscribe</exception>
         public async Task SubscribeAsync(Subscribe subscribe)
         {
             if (subscribe == null)
@@ -70,6 +76,23 @@ namespace Kraken.WebSockets
 
             logger.Debug("Adding subscription: {@subscribe}", subscribe);
             await socket.SendAsync(subscribe);
+        }
+
+        /// <summary>
+        /// Unsubscribe from a specific subscription.
+        /// </summary>
+        /// <param name="channelId">The channel identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">subscription</exception>
+        public async Task UnsubscribeAsync(int channelId)
+        {
+            if (channelId == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(channelId));
+            }
+
+            logger.Debug("Unsubscribe from subscription with channelId '{channelId}'", channelId);
+            await socket.SendAsync(new Unsubscribe(channelId));   
         }
 
         #region Private Helper
@@ -133,7 +156,7 @@ namespace Kraken.WebSockets
                 Subscriptions.Add(value, currentStatus);
             }
         }
-
+        
         #endregion
     }
 }

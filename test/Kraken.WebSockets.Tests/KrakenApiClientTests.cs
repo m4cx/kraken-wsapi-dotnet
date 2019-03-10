@@ -45,10 +45,8 @@ namespace Kraken.WebSockets.Tests
         #region SubscribeAsync()
 
         [Fact]
-        public async Task SubscribeAsync_SubscribeNull_ThrowsArgumentNullException()
-        {
-            Assert.Equal("subscribe", (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.SubscribeAsync(null))).ParamName);
-        }
+        public async Task SubscribeAsync_SubscribeNull_ThrowsArgumentNullException() 
+            => Assert.Equal("subscribe", (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.SubscribeAsync(null))).ParamName);
 
         [Fact]
         public async Task SubscribeAsync_WithSubscribe_SubscribeIsPassedToSocket()
@@ -102,8 +100,21 @@ namespace Kraken.WebSockets.Tests
             
             Assert.Equal(1, instance.Subscriptions.Count);
         }
-        
-        
+
+        #endregion
+
+        #region UnsubscribeAsync()
+
+        [Fact]
+        public async Task UnsubscribeAsync_ChannelIdZero_ThrowsArgumentOutOfRangeException() 
+            => Assert.Equal("channelId", (await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => instance.UnsubscribeAsync(0))).ParamName);
+
+        [Fact]
+        public async Task UnsubscribeAsync_SubscriptionWithChannelId_ThrowsArgumentNullException()
+        {
+            await instance.UnsubscribeAsync(123);
+            socket.Verify(x => x.SendAsync(It.Is<Unsubscribe>(y => y.ChannelId == 123)));
+        }
 
         #endregion
     }
