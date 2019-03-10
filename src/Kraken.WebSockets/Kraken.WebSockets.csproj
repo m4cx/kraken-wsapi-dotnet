@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ReleaseVersion>0.0.1</ReleaseVersion>
-    <PackOnBuild>true</PackOnBuild>
+    <PackOnBuild>false</PackOnBuild>
     <PackageVersion>0.0.1-alpha</PackageVersion>
     <Authors>Maik Schöneich</Authors>
     <PackageId>Kraken.WebSockets</PackageId>
