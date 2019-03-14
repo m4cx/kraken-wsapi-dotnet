@@ -1,26 +1,45 @@
 pool:
   vmImage: 'vs2017-win2016'
 
+variables:
+    major: 0
+    minor: 1
+    patch: 0
+    versionNumber: $(major).$(minor).$(patch)-b$(Build.BuildId)
+
 name: $(BuildId)
 steps:
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: restore
-    projects: 'src/Kraken.WebSockets/*.csproj'
-
-- task: DotNetCoreCLI@2
+# Restore NuGet Packages
+- script: 'dotnet restore "./Kraken.WebSockets.sln"'
+# Build all projects with specific version number
+- task: CmdLine@2
   displayName: 'dotnet build'
   inputs:
-    projects: 'src/Kraken.WebSockets/*.csproj'
-    arguments: '--no-restore'
-
+    script: 'dotnet build "./Kraken.WebSockets.sln" --no-restore -p:Version=$(versionNumber)'
+# Execute defined tests and collect code coverage
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: test
     projects: test/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
-    arguments: '--collect "Code coverage" --settings:../../codecoverage.runsettings'
+    arguments: '--no-restore --no-build --collect "Code coverage" --settings:../../codecoverage.runsettings'
+
+# Create nuget package
+- script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
+# - task: NuGetCommand@2
+#   inputs:
+#     command: pack
+#     packagesToPack: src/Kraken.WebSockets/*.csproj
+#     versioningScheme: byEnvVar
+#     versionEnvVar: versionNumber
+
+- task: NuGetCommand@2
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+  inputs:
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: 'Official NuGet'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
