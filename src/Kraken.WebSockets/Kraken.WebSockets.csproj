@@ -2,9 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>0.0.1</ReleaseVersion>
     <PackOnBuild>false</PackOnBuild>
-    <PackageVersion>0.0.1-alpha</PackageVersion>
     <Authors>Maik Schöneich</Authors>
     <PackageId>Kraken.WebSockets</PackageId>
     <Description>Public WebSocket API Client for kraken.com </Description>
@@ -17,9 +15,6 @@
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Class1.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
     <PackageReference Include="Serilog" Version="2.8.0" />
@@ -27,8 +22,5 @@
   <ItemGroup>
     <Folder Include="Events\" />
     <Folder Include="Extensions\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove=".DS_Store" />
   </ItemGroup>
 </Project>
