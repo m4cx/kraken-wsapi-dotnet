@@ -6,7 +6,7 @@ variables:
 
 jobs:
   - job: 
-    name: "Build & Test"
+    displayName: "Build & Test"
     pool:
       vmImage: 'vs2017-win2016'
     steps:
