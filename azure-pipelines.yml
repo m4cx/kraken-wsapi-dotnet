@@ -15,13 +15,13 @@ steps:
 - task: CmdLine@2
   displayName: 'dotnet build'
   inputs:
-    script: 'dotnet build "./Kraken.WebSockets.sln" --no-restore -p:Version=$(versionNumber)'
+    script: 'dotnet build "src/Kraken.WebSockets.sln" --no-restore -p:Version=$(versionNumber)'
 # Execute defined tests and collect code coverage
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: test
-    projects: test/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
+    projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
     arguments: '--no-restore --no-build --collect "Code coverage" --settings:../../codecoverage.runsettings'
 
 # Create nuget package
@@ -44,7 +44,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
   inputs:
-    SourceFolder: src/Kraken.WebSockets/bin/Debug
+    SourceFolder: src/Kraken.WebSockets/bin
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
