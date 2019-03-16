@@ -10,12 +10,12 @@ variables:
 name: $(BuildId)
 steps:
 # Restore NuGet Packages
-- script: 'dotnet restore "./Kraken.WebSockets.sln"'
+- script: 'dotnet restore "src/Kraken.WebSockets.sln"'
+  displayName: "Restore NuGet Packages"
 # Build all projects with specific version number
-- task: CmdLine@2
+- script: 'dotnet build "src/Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(versionNumber)'
   displayName: 'dotnet build'
-  inputs:
-    script: 'dotnet build "src/Kraken.WebSockets.sln" --no-restore -p:Version=$(versionNumber)'
+
 # Execute defined tests and collect code coverage
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
@@ -26,12 +26,7 @@ steps:
 
 # Create nuget package
 - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
-# - task: NuGetCommand@2
-#   inputs:
-#     command: pack
-#     packagesToPack: src/Kraken.WebSockets/*.csproj
-#     versioningScheme: byEnvVar
-#     versionEnvVar: versionNumber
+  displayName: "Create NuGet Package"
 
 - task: NuGetCommand@2
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
