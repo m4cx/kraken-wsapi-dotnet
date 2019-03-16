@@ -22,10 +22,10 @@ steps:
   inputs:
     command: test
     projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
-    arguments: '--no-restore --no-build --collect "Code coverage" --settings:../../codecoverage.runsettings'
+    arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:../../codecoverage.runsettings'
 
 # Create nuget package
-- script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
+- script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
   displayName: "Create NuGet Package"
 
 - task: NuGetCommand@2
