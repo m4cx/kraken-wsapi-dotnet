@@ -5,7 +5,8 @@ variables:
     versionNumber: $(major).$(minor).$(patch)-b$(Build.BuildId)
 
 jobs:
-  - job: "Build & Test"
+  - job: 
+    name: "Build & Test"
     pool:
       vmImage: 'vs2017-win2016'
     steps:
