@@ -7,40 +7,41 @@ variables:
     patch: 0
     versionNumber: $(major).$(minor).$(patch)-b$(Build.BuildId)
 
-name: $(BuildId)
-steps:
-# Restore NuGet Packages
-- script: 'dotnet restore "src/Kraken.WebSockets.sln"'
-  displayName: "Restore NuGet Packages"
-# Build all projects with specific version number
-- script: 'dotnet build "src/Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(versionNumber)'
-  displayName: 'dotnet build'
+jobs:
+  - job: $(BuildId)
+    steps:
+    # Restore NuGet Packages
+    - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
+      displayName: "Restore NuGet Packages"
+    # Build all projects with specific version number
+    - script: 'dotnet build "src/Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(versionNumber)'
+      displayName: 'dotnet build'
 
-# Execute defined tests and collect code coverage
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: test
-    projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
-    arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:../../codecoverage.runsettings'
+    # Execute defined tests and collect code coverage
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test'
+      inputs:
+        command: test
+        projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
+        arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:../../codecoverage.runsettings'
 
-# Create nuget package
-- script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
-  displayName: "Create NuGet Package"
+    # Create nuget package
+    - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
+      displayName: "Create NuGet Package"
 
-- task: NuGetCommand@2
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-  inputs:
-    command: push
-    nuGetFeedType: external
-    publishFeedCredentials: 'Official NuGet'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    - task: NuGetCommand@2
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+      inputs:
+        command: push
+        nuGetFeedType: external
+        publishFeedCredentials: 'Official NuGet'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
 
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-  inputs:
-    SourceFolder: "./build"
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+      inputs:
+        SourceFolder: "./build"
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
