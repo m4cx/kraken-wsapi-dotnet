@@ -6,6 +6,7 @@ variables:
 
 jobs:
   - job: 
+    name: $(BuildID)
     displayName: "Build & Test"
     pool:
       vmImage: 'vs2017-win2016'
