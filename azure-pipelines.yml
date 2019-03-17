@@ -29,9 +29,6 @@ jobs:
     - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
       displayName: "Create NuGet Package"
 
-  - job:
-    displayName: "Deployment"
-    steps:
     - task: NuGetCommand@2
       displayName: "Deployment to NuGet Gallery"
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
