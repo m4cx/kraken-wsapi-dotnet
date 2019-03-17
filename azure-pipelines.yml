@@ -3,10 +3,9 @@ variables:
     minor: 1
     patch: 0
     versionNumber: $(major).$(minor).$(patch)-b$(Build.BuildId)
-
+name: $(BuildID)
 jobs:
   - job: 
-    name: $(BuildID)
     displayName: "Build & Test"
     pool:
       vmImage: 'vs2017-win2016'
