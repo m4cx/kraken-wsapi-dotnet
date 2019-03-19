@@ -15,6 +15,14 @@ namespace Kraken.WebSockets.Events
         public string Event { get; }
 
         /// <summary>
+        /// Gets the channel identifier.
+        /// </summary>
+        /// <value>
+        /// The channel identifier.
+        /// </value>
+        public int? ChannelId { get; }
+
+        /// <summary>
         /// Gets the raw content of the message.
         /// </summary>
         /// <value>The content of the raw.</value>
@@ -26,10 +34,11 @@ namespace Kraken.WebSockets.Events
         /// </summary>
         /// <param name="event">Event identifier</param>
         /// <param name="rawContent">Raw content.</param>
-        public KrakenMessageEventArgs(string @event, string rawContent)
+        public KrakenMessageEventArgs(string @event, string rawContent, int? channelId = null)
         {
             Event = @event;
             RawContent = rawContent;
+            ChannelId = channelId;
         }
     }
 }

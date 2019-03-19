@@ -14,10 +14,10 @@ namespace Kraken.WebSockets.Sample
         static void Main(string[] args)
         {
             // Configure logging
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
-                .CreateLogger();
+            //Log.Logger = new LoggerConfiguration()
+            //    .MinimumLevel.Verbose()
+            //    .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
+            //    .CreateLogger();
 
             Task.Run(RunKraken);
             do
@@ -39,7 +39,10 @@ namespace Kraken.WebSockets.Sample
             kraken = new KrakenWebSocket(uri, serializer);
 
             var client = new KrakenApiClient(kraken, serializer);
-            client.SystemStatusChanged += (sender, e) => logger.Information("System status changed: {systemStatus}", e.Message);
+
+            client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed: status={e.Message.Status}");
+            client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}"); ;
+            client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
             await kraken.ConnectAsync();
 
 

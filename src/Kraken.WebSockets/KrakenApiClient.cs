@@ -41,6 +41,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenMessageEventArgs<SubscriptionStatus>> SubscriptionStatusChanged;
 
         /// <summary>
+        /// Occurs when a new ticker information was received.
+        /// </summary>
+        public event EventHandler<TickerEventArgs> TickerReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -117,6 +122,24 @@ namespace Kraken.WebSockets
                     SynchronizeSubscriptions(subscriptionStatus);
                     SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
 
+                    break;
+
+                case "data":
+
+                    var subscription = Subscriptions.ContainsKey(eventArgs.ChannelId.Value) ? Subscriptions[eventArgs.ChannelId.Value] : null;
+                    if (subscription == null)
+                    {
+                        logger.Warning($"Didn't find a subscription for channelId={eventArgs.ChannelId}");
+                        break;
+                    }
+
+                    var dataTyoe = subscription.Subscription.Name;
+                    if (dataTyoe == SubscribeOptionNames.Ticker)
+                    {
+                        var tickerMessage = TickerMessage.CreateFromString(eventArgs.RawContent, subscription);
+                        TickerReceived.InvokeAll(this, new TickerEventArgs(subscription.ChannelId.Value, subscription.Pair, tickerMessage));
+                    }
+                    // TODO: map to subscription in deserialize to correct message
                     break;
 
                 default:
