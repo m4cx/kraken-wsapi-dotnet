@@ -22,7 +22,6 @@
     <PackageReference Include="Serilog" Version="2.8.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Events\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 </Project>
