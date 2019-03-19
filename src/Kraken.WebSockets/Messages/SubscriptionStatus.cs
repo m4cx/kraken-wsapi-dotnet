@@ -5,7 +5,7 @@ namespace Kraken.WebSockets.Messages
     /// <summary>
     /// Subscription status.
     /// </summary>
-    public sealed class SubscriptionStatus : KrakenMessage
+    public class SubscriptionStatus : KrakenMessage
     {
         public const string EventName = "subscriptionStatus";
 
@@ -43,6 +43,15 @@ namespace Kraken.WebSockets.Messages
         /// <value>The error message.</value>
         [JsonProperty("errorMessage")]
         public string ErrorMessage { get; internal set; }
+
+        /// <summary>
+        /// Gets the subscription.
+        /// </summary>
+        /// <value>
+        /// The subscription.
+        /// </value>
+        [JsonProperty("subscription")]
+        public SubscribeOptions Subscription { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.Subscription"/> class.

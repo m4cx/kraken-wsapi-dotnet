@@ -23,5 +23,15 @@ namespace Kraken.WebSockets.Extensions
                 handler.DynamicInvoke(sender, new KrakenMessageEventArgs<TMessage>(message));
             }
         }
+
+        public static void InvokeAll(this EventHandler<TickerEventArgs> tickerEventHandler, object sender, TickerEventArgs eventArgs)
+        {
+            var invocationList = tickerEventHandler?.GetInvocationList();
+            if (invocationList == null) return;
+            foreach (var handler in invocationList)
+            {
+                handler.DynamicInvoke(sender, eventArgs);
+            }
+        }
     }
 }

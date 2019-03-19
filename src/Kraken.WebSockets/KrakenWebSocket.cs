@@ -119,7 +119,7 @@ namespace Kraken.WebSockets
                 while (webSocket.State == WebSocketState.Open)
                 {
                     var messageParts = new StringBuilder();
-                    logger.Information("Waiting for new message");
+                    logger.Debug("Waiting for new message");
                     WebSocketReceiveResult result;
                     do
                     {
@@ -127,10 +127,10 @@ namespace Kraken.WebSockets
 
                         if (result.MessageType == WebSocketMessageType.Close)
                         {
-                            logger.Information("Closing connection to socket");
+                            logger.Debug("Closing connection to socket");
                             await
                                 webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                            logger.Information("Connection successfully closed");
+                            logger.Debug("Connection successfully closed");
                             // TODO: Disconnected-Event
                         }
                         else
@@ -145,21 +145,27 @@ namespace Kraken.WebSockets
                     logger.Debug("Received new message from websocket");
                     logger.Verbose("Received: {message}", message);
 
-                    JToken eventString = null;
+                    string eventString = null;
+                    int? channelId = null;
+
                     if (!string.IsNullOrEmpty(message))
                     {
-                        try
+                        var token = JToken.Parse(message);
+                        if (token is JObject)
                         {
                             var messageObj = JObject.Parse(message);
                             eventString = (string)messageObj.GetValue("event");
                         }
-                        catch(JsonReaderException)
+                        else if (token is JArray)
                         {
-                            logger.Verbose("Message is no event, just data");
+                            var arrayToken = token as JArray;
+                            channelId = (int)arrayToken.First;
+                            eventString = "data";
+                    
                         }
                     }
 
-                    InvokeDataReceived(new KrakenMessageEventArgs((string)eventString, message));
+                    InvokeDataReceived(new KrakenMessageEventArgs(eventString, message, channelId));
                 }
             }
             catch (Exception ex)
@@ -170,6 +176,7 @@ namespace Kraken.WebSockets
             }
             finally
             {
+                logger.Information("Closing WebSocket");
                 webSocket.Dispose();
             }
         }
