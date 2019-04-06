@@ -44,6 +44,7 @@ namespace Kraken.WebSockets.Sample
             client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}"); ;
             client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
             client.OhlcReceived += (sender, e) => Console.WriteLine($"Ohlc received");
+            client.TradeReceived += (sender, e) => Console.WriteLine($"Trade received");
             await kraken.ConnectAsync();
 
             client.SubscriptionStatusChanged += async (sender, e) =>

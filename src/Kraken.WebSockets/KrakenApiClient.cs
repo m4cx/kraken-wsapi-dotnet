@@ -51,6 +51,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenDataEventArgs<OhlcMessage>> OhlcReceived;
 
         /// <summary>
+        /// Occurs when new trade information was received.
+        /// </summary>
+        public event EventHandler<KrakenDataEventArgs<TradeMessage>> TradeReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -149,6 +154,11 @@ namespace Kraken.WebSockets
                     {
                         var ohlcMessage = OhlcMessage.CreateFromString(eventArgs.RawContent);
                         OhlcReceived.InvokeAll(this, new OhlcEventArgs(subscription.ChannelId.Value, subscription.Pair, ohlcMessage));
+                    }
+                    if (dataTyoe == SubscribeOptionNames.Trade)
+                    {
+                        var tradeMessage = TradeMessage.CreateFromString(eventArgs.RawContent);
+                        TradeReceived.InvokeAll(this, new TradeEventArgs(subscription.ChannelId.Value, subscription.Pair, tradeMessage));
                     }
 
                     // TODO: map to subscription in deserialize to correct message
