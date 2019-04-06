@@ -9,6 +9,11 @@ variables:
 
 name: $(BuildId)
 steps:
+# Lint commits
+- script: npm i
+  displayName: "Install node packages"
+- script: ./node_modules/.bin/commitlint-azure-pipelines
+  displayName: "Run commit lint"
 # Restore NuGet Packages
 - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
   displayName: "Restore NuGet Packages"
