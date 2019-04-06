@@ -56,6 +56,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenDataEventArgs<TradeMessage>> TradeReceived;
 
         /// <summary>
+        /// Occurs when new spread information was received.
+        /// </summary>
+        public event EventHandler<KrakenDataEventArgs<SpreadMessage>> SpreadReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -159,6 +164,11 @@ namespace Kraken.WebSockets
                     {
                         var tradeMessage = TradeMessage.CreateFromString(eventArgs.RawContent);
                         TradeReceived.InvokeAll(this, new TradeEventArgs(subscription.ChannelId.Value, subscription.Pair, tradeMessage));
+                    }
+                    if (dataTyoe == SubscribeOptionNames.Spread)
+                    {
+                        var spreadMessage = SpreadMessage.CreateFromString(eventArgs.RawContent);
+                        SpreadReceived.InvokeAll(this, new SpreadEventArgs(subscription.ChannelId.Value, subscription.Pair, spreadMessage));
                     }
 
                     // TODO: map to subscription in deserialize to correct message
