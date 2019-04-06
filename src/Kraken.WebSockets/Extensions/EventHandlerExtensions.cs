@@ -24,9 +24,9 @@ namespace Kraken.WebSockets.Extensions
             }
         }
 
-        public static void InvokeAll(this EventHandler<TickerEventArgs> tickerEventHandler, object sender, TickerEventArgs eventArgs)
+        public static void InvokeAll<TData>(this EventHandler<KrakenDataEventArgs<TData>> eventHandler, object sender, KrakenDataEventArgs<TData> eventArgs)
         {
-            var invocationList = tickerEventHandler?.GetInvocationList();
+            var invocationList = eventHandler?.GetInvocationList();
             if (invocationList == null) return;
             foreach (var handler in invocationList)
             {
