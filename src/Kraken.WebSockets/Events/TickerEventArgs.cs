@@ -5,32 +5,8 @@ namespace Kraken.WebSockets.Events
     /// <summary>
     /// The information received for a ticker subscription.
     /// </summary>
-    public class TickerEventArgs
+    public class TickerEventArgs : KrakenDataEventArgs<TickerMessage>
     {
-        /// <summary>
-        /// Gets the channel identifier.
-        /// </summary>
-        /// <value>
-        /// The channel identifier.
-        /// </value>
-        public int ChannelId { get; private set; }
-
-        /// <summary>
-        /// Gets the pair.
-        /// </summary>
-        /// <value>
-        /// The pair.
-        /// </value>
-        public string Pair { get; private set; }
-
-        /// <summary>
-        /// Gets the ticker.
-        /// </summary>
-        /// <value>
-        /// The ticker.
-        /// </value>
-        public TickerMessage Ticker { get; private set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TickerEventArgs" /> class.
         /// </summary>
@@ -38,10 +14,8 @@ namespace Kraken.WebSockets.Events
         /// <param name="pair">The pair.</param>
         /// <param name="ticker">The ticker.</param>
         public TickerEventArgs(int channelId, string pair, TickerMessage ticker)
+            :base(channelId, pair, ticker)
         {
-            ChannelId = channelId;
-            Pair = pair;
-            Ticker = ticker;
         }
     }
 }
