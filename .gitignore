@@ -7,3 +7,5 @@ obj
 coverage.json
 /TestResults
 build/
+node_modules/
+TestResults/
