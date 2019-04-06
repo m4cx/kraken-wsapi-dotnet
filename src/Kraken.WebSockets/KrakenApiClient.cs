@@ -43,7 +43,12 @@ namespace Kraken.WebSockets
         /// <summary>
         /// Occurs when a new ticker information was received.
         /// </summary>
-        public event EventHandler<TickerEventArgs> TickerReceived;
+        public event EventHandler<KrakenDataEventArgs<TickerMessage>> TickerReceived;
+
+        /// <summary>
+        /// Occurs when new ohlc information was received.
+        /// </summary>
+        public event EventHandler<KrakenDataEventArgs<OhlcMessage>> OhlcReceived;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
@@ -134,11 +139,18 @@ namespace Kraken.WebSockets
                     }
 
                     var dataTyoe = subscription.Subscription.Name;
+
                     if (dataTyoe == SubscribeOptionNames.Ticker)
                     {
                         var tickerMessage = TickerMessage.CreateFromString(eventArgs.RawContent, subscription);
                         TickerReceived.InvokeAll(this, new TickerEventArgs(subscription.ChannelId.Value, subscription.Pair, tickerMessage));
                     }
+                    if (dataTyoe == SubscribeOptionNames.OHLC)
+                    {
+                        var ohlcMessage = OhlcMessage.CreateFromString(eventArgs.RawContent);
+                        OhlcReceived.InvokeAll(this, new OhlcEventArgs(subscription.ChannelId.Value, subscription.Pair, ohlcMessage));
+                    }
+
                     // TODO: map to subscription in deserialize to correct message
                     break;
 

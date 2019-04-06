@@ -4,6 +4,10 @@ using System;
 
 namespace Kraken.WebSockets.Messages
 {
+    /// <summary>
+    /// Ticker information includes best ask and best bid prices, 24hr volume, last trade price, volume weighted average price, 
+    /// etc for a given currency pair. A ticker message is published every time a trade or a group of trade happens.
+    /// </summary>
     public sealed class TickerMessage
     {
         /// <summary>
@@ -99,7 +103,7 @@ namespace Kraken.WebSockets.Messages
         /// <returns></returns>
         public static TickerMessage CreateFromString(string tickerRawMessage, SubscriptionStatus subscription)
         {
-            var tokenArray = EnsureRawMessage(tickerRawMessage);
+            var tokenArray = KrakenDataMessageHelper.EnsureRawMessage(tickerRawMessage);
             var channelId = (int)tokenArray.First;
             var message = tokenArray.Last;
 
@@ -119,34 +123,6 @@ namespace Kraken.WebSockets.Messages
             };
 
             return tickerMessage;
-        }
-
-        private static JArray EnsureRawMessage(string tickerRawMessage)
-        {
-            if (tickerRawMessage == null)
-            {
-                throw new ArgumentNullException(nameof(tickerRawMessage));
-            }
-
-            if (string.IsNullOrEmpty(tickerRawMessage))
-            {
-                throw new ArgumentOutOfRangeException(nameof(tickerRawMessage));
-            }
-
-            try
-            {
-                var token = JToken.Parse(tickerRawMessage);
-                if (!(token is JArray))
-                {
-                    throw new ArgumentOutOfRangeException(nameof(tickerRawMessage));
-                }
-
-                return token as JArray;
-            }
-            catch (JsonReaderException ex)
-            {
-                throw new ArgumentOutOfRangeException(nameof(tickerRawMessage), ex.Message);
-            }
         }
     }
 }

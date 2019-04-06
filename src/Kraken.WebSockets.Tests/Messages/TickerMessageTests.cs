@@ -21,7 +21,7 @@ namespace Kraken.WebSockets.Tests.Messages
         [Fact]
         public void FromString_TickerRawContentNull_ThrowsArgumentNullException()
         {
-            Assert.Equal("tickerRawMessage", 
+            Assert.Equal("rawMessage", 
                 Assert.Throws<ArgumentNullException>(() => TickerMessage.CreateFromString(null, subscription.Object)).ParamName);
         }
 
@@ -30,7 +30,7 @@ namespace Kraken.WebSockets.Tests.Messages
         [InlineData("dlasfjdaoifjaokdmfaoidja")]
         public void FromString_TickerRawContentValue_ThrowsArgumentOutOfRangeException(string value)
         {
-            Assert.Equal("tickerRawMessage",
+            Assert.Equal("rawMessage",
                 Assert.Throws<ArgumentOutOfRangeException>(() => TickerMessage.CreateFromString(value, subscription.Object)).ParamName);
         }
 

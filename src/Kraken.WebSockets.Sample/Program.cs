@@ -43,14 +43,14 @@ namespace Kraken.WebSockets.Sample
             client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed: status={e.Message.Status}");
             client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}"); ;
             client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
+            client.OhlcReceived += (sender, e) => Console.WriteLine($"Ohlc received");
             await kraken.ConnectAsync();
-
 
             client.SubscriptionStatusChanged += async (sender, e) =>
             {
                 if (e.Message.Status == SubscriptionStatusNames.Subscribe && e.Message.ChannelId.HasValue)
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(50000);
                     await client.UnsubscribeAsync(e.Message.ChannelId.Value);
                 }
             };
