@@ -61,6 +61,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenDataEventArgs<SpreadMessage>> SpreadReceived;
 
         /// <summary>
+        /// Occurs when new book snapshot information was received.
+        /// </summary>
+        public event EventHandler<KrakenDataEventArgs<BookSnapshotMessage>> BookSnapshotReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -148,27 +153,35 @@ namespace Kraken.WebSockets
                         break;
                     }
 
-                    var dataTyoe = subscription.Subscription.Name;
+                    var dataType = subscription.Subscription.Name;
 
-                    if (dataTyoe == SubscribeOptionNames.Ticker)
+                    if (dataType == SubscribeOptionNames.Ticker)
                     {
                         var tickerMessage = TickerMessage.CreateFromString(eventArgs.RawContent, subscription);
                         TickerReceived.InvokeAll(this, new TickerEventArgs(subscription.ChannelId.Value, subscription.Pair, tickerMessage));
                     }
-                    if (dataTyoe == SubscribeOptionNames.OHLC)
+                    if (dataType == SubscribeOptionNames.OHLC)
                     {
                         var ohlcMessage = OhlcMessage.CreateFromString(eventArgs.RawContent);
                         OhlcReceived.InvokeAll(this, new OhlcEventArgs(subscription.ChannelId.Value, subscription.Pair, ohlcMessage));
                     }
-                    if (dataTyoe == SubscribeOptionNames.Trade)
+                    if (dataType == SubscribeOptionNames.Trade)
                     {
                         var tradeMessage = TradeMessage.CreateFromString(eventArgs.RawContent);
                         TradeReceived.InvokeAll(this, new TradeEventArgs(subscription.ChannelId.Value, subscription.Pair, tradeMessage));
                     }
-                    if (dataTyoe == SubscribeOptionNames.Spread)
+                    if (dataType == SubscribeOptionNames.Spread)
                     {
                         var spreadMessage = SpreadMessage.CreateFromString(eventArgs.RawContent);
                         SpreadReceived.InvokeAll(this, new SpreadEventArgs(subscription.ChannelId.Value, subscription.Pair, spreadMessage));
+                    }
+                    if (dataType == SubscribeOptionNames.Book)
+                    {
+                        if (eventArgs.RawContent.Contains(@"""as"":") && eventArgs.RawContent.Contains(@"""bs"":"))
+                        {
+                            var bookSnapshotMessage = BookSnapshotMessage.CreateFromString(eventArgs.RawContent);
+                            BookSnapshotReceived.InvokeAll(this, new KrakenDataEventArgs<BookSnapshotMessage>(eventArgs.ChannelId.Value, subscription.Pair, bookSnapshotMessage));
+                        }
                     }
 
                     // TODO: map to subscription in deserialize to correct message
