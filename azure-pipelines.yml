@@ -12,7 +12,7 @@ steps:
 # Lint commits
 - script: npm i
   displayName: "Install node packages"
-- script: ./node_modules/.bin/commitlint-azure-pipelines
+- script: npm run commitlint
   displayName: "Run commit lint"
 # Restore NuGet Packages
 - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
