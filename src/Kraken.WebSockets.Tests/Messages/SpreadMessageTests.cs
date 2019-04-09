@@ -12,7 +12,7 @@ namespace Kraken.WebSockets.Tests.Messages
         [Fact]
         public void CreateFromString_Test()
         {
-            var rawSpreadMessage = @"[0,[""5698.40000"",""5700.00000"",""1542057299.545897""]]";
+            var rawSpreadMessage = TestSocketMessages.SpreadMessage;
             var spreadMessage = SpreadMessage.CreateFromString(rawSpreadMessage);
 
             Assert.NotNull(spreadMessage);

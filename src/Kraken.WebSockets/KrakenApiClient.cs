@@ -194,7 +194,6 @@ namespace Kraken.WebSockets
                         }
                     }
 
-                    // TODO: map to subscription in deserialize to correct message
                     break;
 
                 default:

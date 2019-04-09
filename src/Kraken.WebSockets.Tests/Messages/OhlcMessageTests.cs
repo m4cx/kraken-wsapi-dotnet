@@ -12,7 +12,7 @@ namespace Kraken.WebSockets.Tests.Messages
         [Fact]
         public void CreateFromString_ExampleOfPayload_ReturnsOhlcMessage()
         {
-            var exampleOfPayload = @"[42,[""1542057314.748456"",""1542057360.435743"",""3586.70000"",""3586.70000"",""3586.60000"",""3586.60000"",""3586.68894"",""0.03373000"",2]]";
+            var exampleOfPayload = TestSocketMessages.OhlcMessage;
             var message = OhlcMessage.CreateFromString(exampleOfPayload);
             Assert.NotNull(message);
 
