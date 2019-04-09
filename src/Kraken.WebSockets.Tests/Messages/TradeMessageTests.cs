@@ -5,14 +5,14 @@ using Xunit;
 namespace Kraken.WebSockets.Tests.Messages
 {
     [ExcludeFromCodeCoverage]
-    public class TradesMessageTests
+    public class TradeMessageTests
     {
         #region CreateFromString() 
 
         [Fact]
         public void CreateFromString_()
         {
-            var rawMessageString = @"[0,[[""5541.20000"",""0.15850568"",""1534614057.321597"",""s"",""l"",""""],[""6060.00000"",""0.02455000"",""1534614057.324998"",""b"",""l"",""""]]]";
+            var rawMessageString = TestSocketMessages.TradeMessage;
             var tradesMessage = TradeMessage.CreateFromString(rawMessageString);
 
             Assert.NotNull(tradesMessage);
