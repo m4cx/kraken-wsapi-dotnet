@@ -47,6 +47,7 @@ namespace Kraken.WebSockets.Sample
             client.TradeReceived += (sender, e) => Console.WriteLine($"Trade received");
             client.SpreadReceived += (sender, e) => Console.WriteLine($"Spread received");
             client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
+            client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
             await kraken.ConnectAsync();
 
             client.SubscriptionStatusChanged += async (sender, e) =>
