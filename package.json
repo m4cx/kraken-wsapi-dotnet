@@ -4,8 +4,7 @@
   "description": "C# / .NET Standard Client for connecting to the public kraken.com WebSocket API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "commitlint": "commitlint --from=develop"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -25,6 +24,7 @@
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
+    "commitlint-azure-pipelines-cli": "^1.0.1",
     "husky": "^1.3.1",
     "install": "^0.12.2",
     "npm": "^6.9.0"
