@@ -6,6 +6,10 @@
     <Authors>Maik Schöneich</Authors>
     <PackageId>Kraken.WebSockets</PackageId>
     <Description>Public WebSocket API Client for kraken.com </Description>
+    <PackageProjectUrl>https://github.com/m4cx/kraken-wsapi-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/m4cx/kraken-wsapi-dotnet.git</RepositoryUrl>
+    <PackageLicenseExpression>https://github.com/m4cx/kraken-wsapi-dotnet/blob/develop/LICENSE.md</PackageLicenseExpression>
+    <RepositoryType>GIT</RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
