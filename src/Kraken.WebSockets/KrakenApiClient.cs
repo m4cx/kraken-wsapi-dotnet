@@ -66,6 +66,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenDataEventArgs<BookSnapshotMessage>> BookSnapshotReceived;
 
         /// <summary>
+        /// Occurs when new book update information was received.
+        /// </summary>
+        public event EventHandler<KrakenDataEventArgs<BookUpdateMessage>> BookUpdateReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -181,6 +186,11 @@ namespace Kraken.WebSockets
                         {
                             var bookSnapshotMessage = BookSnapshotMessage.CreateFromString(eventArgs.RawContent);
                             BookSnapshotReceived.InvokeAll(this, new KrakenDataEventArgs<BookSnapshotMessage>(eventArgs.ChannelId.Value, subscription.Pair, bookSnapshotMessage));
+                        }
+                        if (eventArgs.RawContent.Contains(@"""a"":") || eventArgs.RawContent.Contains(@"""b"":"))
+                        {
+                            var bookUpdateMessage = BookUpdateMessage.CreateFromString(eventArgs.RawContent);
+                            BookUpdateReceived.InvokeAll(this, new KrakenDataEventArgs<BookUpdateMessage>(eventArgs.ChannelId.Value, subscription.Pair, bookUpdateMessage));
                         }
                     }
 
