@@ -22,7 +22,7 @@ For detailed information on the installing of pre-release versions please refer 
 ## Create a connection and listen for events
 Creating a connection is pretty easy but will also be improved in the future. But for now just do it like this:
 ```csharp
- var uri = "wss://ws-sandbox.kraken.com";
+var uri = "wss://ws-sandbox.kraken.com";
 var serializer = new KrakenMessageSerializer();
 kraken = new KrakenWebSocket(uri, serializer);
 
