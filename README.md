@@ -1,6 +1,6 @@
 |master|develop|nuget|
 |------|-------|------|
-|[![Build Status](https://macx.visualstudio.com/kraken-wsapi-dotnet/_apis/build/status/m4cx.kraken-wsapi-dotnet?branchName=master)](https://macx.visualstudio.com/kraken-wsapi-dotnet/_build/latest?definitionId=12&branchName=master)|[![Build Status](https://macx.visualstudio.com/kraken-wsapi-dotnet/_apis/build/status/m4cx.kraken-wsapi-dotnet?branchName=develop)](https://macx.visualstudio.com/kraken-wsapi-dotnet/_build/latest?definitionId=12&branchName=develop)| ![Stable](https://img.shields.io/nuget/v/Kraken.WebSockets.svg)|
+|[![Build Status](https://macx.visualstudio.com/kraken-wsapi-dotnet/_apis/build/status/m4cx.kraken-wsapi-dotnet?branchName=master)](https://macx.visualstudio.com/kraken-wsapi-dotnet/_build/latest?definitionId=12&branchName=master)|[![Build Status](https://macx.visualstudio.com/kraken-wsapi-dotnet/_apis/build/status/m4cx.kraken-wsapi-dotnet?branchName=develop)](https://macx.visualstudio.com/kraken-wsapi-dotnet/_build/latest?definitionId=12&branchName=develop)| [![Stable](https://img.shields.io/nuget/v/Kraken.WebSockets.svg)](https://www.nuget.org/packages/Kraken.WebSockets)|
 
 # kraken-wsapi-dotnet
 C# / .NET Standard Client for connecting to the public kraken.com WebSocket API
