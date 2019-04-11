@@ -1,0 +1,11 @@
+.vs
+bin
+obj
+.idea/.idea.Kraken.WebSockets/.idea
+.idea
+*.user
+coverage.json
+/TestResults
+build/
+node_modules/
+TestResults/
