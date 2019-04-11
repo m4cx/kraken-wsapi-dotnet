@@ -9,6 +9,37 @@ C# / .NET Standard Client for connecting to the public kraken.com WebSocket API
 See the official documentation fur further information
 https://www.kraken.com/features/websocket-api
 
+# Getting started
+
+## Installing it in your project environment
+Get the current version from NuGet Gallery using the Package Manager / .NET CLI
+```bash
+PM> Install-Package Kraken.WebSockets # Package Manager
+> dotnet add package Kraken.WebSockets # .NET CLI
+```
+For detailed information on the installing of pre-release versions please refer to the [NuGet Gallery](https://www.nuget.org/packages/Kraken.WebSockets) itself.
+
+## Create a connection and listen for events
+Creating a connection is pretty easy but will also be improved in the future. But for now just do it like this:
+```csharp
+var uri = "wss://ws-sandbox.kraken.com";
+var serializer = new KrakenMessageSerializer();
+kraken = new KrakenWebSocket(uri, serializer);
+
+var client = new KrakenApiClient(kraken, serializer);
+
+client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed");
+client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed"); ;
+client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
+client.OhlcReceived += (sender, e) => Console.WriteLine($"Ohlc received");
+client.TradeReceived += (sender, e) => Console.WriteLine($"Trade received");
+client.SpreadReceived += (sender, e) => Console.WriteLine($"Spread received");
+client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
+client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
+await kraken.ConnectAsync();
+```
+You can also find a running example in the repository.
+
 # Support
 If you like the stuff I do, please don't hesitate to support my actions by donating me a coffee!
 

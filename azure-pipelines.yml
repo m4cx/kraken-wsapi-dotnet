@@ -11,15 +11,15 @@ jobs:
     vmImage: 'vs2017-win2016'
   steps:
   # Lint commits
-  - script: npm install
+  - script: npm install 
   - script: ./node_modules/.bin/commitlint-azure-pipelines
 # Pre-Release Build  
 - job: "BuildPreRelease"
+  dependsOn: "linting"
   condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
   pool:
     vmImage: 'vs2017-win2016'
   displayName: "Build Pre-Release"
-  dependsOn: "linting"
   steps:
   # Restore NuGet Packages
   - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
