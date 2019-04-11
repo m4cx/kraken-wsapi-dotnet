@@ -4,7 +4,8 @@
   "description": "C# / .NET Standard Client for connecting to the public kraken.com WebSocket API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "commitlint": "commitlint --from=origin/master"
   },
   "repository": {
     "type": "git",
