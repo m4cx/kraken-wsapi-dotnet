@@ -43,7 +43,7 @@ namespace Kraken.WebSockets.Messages
             return new TradeMessage()
             {
                 ChannelId = Convert.ToInt64(message.First),
-                Trades = ((JArray)message.Last).OfType<JArray>().Select(tradeJArray => TradeValues.CreateFromJArray(tradeJArray)).ToArray()
+                Trades = ((JArray)message[1]).OfType<JArray>().Select(tradeJArray => TradeValues.CreateFromJArray(tradeJArray)).ToArray()
             };
         }
     }

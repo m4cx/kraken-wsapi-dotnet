@@ -48,7 +48,7 @@ namespace Kraken.WebSockets.Messages
         public static BookSnapshotMessage CreateFromString(string rawBookSnapshotMessage)
         {
             var bookSnapshotTokens = KrakenDataMessageHelper.EnsureRawMessage(rawBookSnapshotMessage);
-            var detailTokens = (JObject)bookSnapshotTokens.Last;
+            var detailTokens = (JObject)bookSnapshotTokens[1];
             return new BookSnapshotMessage
             {
                 ChannelId = Convert.ToInt64(bookSnapshotTokens.First),

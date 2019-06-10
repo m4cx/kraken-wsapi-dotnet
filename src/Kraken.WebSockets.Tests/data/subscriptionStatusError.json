@@ -1,0 +1,10 @@
+{
+  "errorMessage": "Subscription depth not supported",
+  "event": "subscriptionStatus",
+  "pair": "XBT/USD",
+  "status": "error",
+  "subscription": {
+    "name": "book",
+    "depth": 42
+  }
+}
