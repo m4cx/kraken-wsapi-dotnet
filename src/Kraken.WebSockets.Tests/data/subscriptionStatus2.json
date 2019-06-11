@@ -1,0 +1,12 @@
+{
+  "channelID": 10001,
+  "event": "subscriptionStatus",
+  "status": "unsubscribed",
+  "pair": "XBT/EUR",
+  "reqID": 42,
+  "subscription": {
+    "name": "ohlc",
+    "interval": 5
+  },
+  "channelName": "ohlc-5"
+}

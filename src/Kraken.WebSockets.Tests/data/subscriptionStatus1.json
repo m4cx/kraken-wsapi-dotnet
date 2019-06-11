@@ -1,0 +1,10 @@
+{
+  "channelID": 10001,
+  "event": "subscriptionStatus",
+  "status": "subscribed",
+  "pair": "XBT/EUR",
+  "subscription": {
+    "name": "ticker"
+  },
+  "channelName": "ticker"
+}

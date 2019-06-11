@@ -55,7 +55,7 @@ namespace Kraken.WebSockets.Messages
         public static SpreadMessage CreateFromString(string rawSpreadMessage)
         {
             var spreadMessage = KrakenDataMessageHelper.EnsureRawMessage(rawSpreadMessage);
-            var spreadTokens = spreadMessage.Last as JArray;
+            var spreadTokens = spreadMessage[1] as JArray;
             return new SpreadMessage
             {
                 ChannelId = Convert.ToInt64(spreadMessage.First),

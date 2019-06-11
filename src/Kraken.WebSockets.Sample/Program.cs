@@ -14,10 +14,10 @@ namespace Kraken.WebSockets.Sample
         static void Main(string[] args)
         {
             // Configure logging
-            //Log.Logger = new LoggerConfiguration()
-            //    .MinimumLevel.Verbose()
-            //    .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
-            //    .CreateLogger();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
+                .CreateLogger();
 
             Task.Run(RunKraken);
             do
@@ -34,7 +34,7 @@ namespace Kraken.WebSockets.Sample
 
         private static async Task RunKraken()
         {
-            var uri = "wss://ws-sandbox.kraken.com";
+            var uri = "wss://ws-beta.kraken.com";
             var serializer = new KrakenMessageSerializer();
             kraken = new KrakenWebSocket(uri, serializer);
 

@@ -105,7 +105,7 @@ namespace Kraken.WebSockets.Messages
         {
             var tokenArray = KrakenDataMessageHelper.EnsureRawMessage(tickerRawMessage);
             var channelId = (int)tokenArray.First;
-            var message = tokenArray.Last;
+            var message = tokenArray[1];
 
             var tickerMessage = new TickerMessage()
             {

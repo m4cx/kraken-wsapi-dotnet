@@ -109,7 +109,7 @@ namespace Kraken.WebSockets.Messages
         public static OhlcMessage CreateFromString(string rawOhlcMessage)
         {
             var ohlcMessage = KrakenDataMessageHelper.EnsureRawMessage(rawOhlcMessage);
-            var dataArray = ohlcMessage.Last as JArray;
+            var dataArray = ohlcMessage[1] as JArray;
             return new OhlcMessage
             {
                 ChannelId = Convert.ToInt64(ohlcMessage.First),
