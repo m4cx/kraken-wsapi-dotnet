@@ -9,8 +9,6 @@ namespace Kraken.WebSockets.Sample
     {
         private static readonly ILogger logger = Log.ForContext<Program>();
 
-        static KrakenWebSocket kraken;
-
         static void Main(string[] args)
         {
             // Configure logging
@@ -26,19 +24,16 @@ namespace Kraken.WebSockets.Sample
             }
             while (Console.ReadKey().Key != ConsoleKey.Escape);
 
-            if (kraken != null)
-            {
-                Task.Run(async () => await kraken.CloseAsync()).Wait();
-            }
+            //if (kraken != null)
+            //{
+            //    Task.Run(async () => await kraken.CloseAsync()).Wait();
+            //}
         }
 
         private static async Task RunKraken()
         {
             var uri = "wss://ws-beta.kraken.com";
-            var serializer = new KrakenMessageSerializer();
-            kraken = new KrakenWebSocket(uri, serializer);
-
-            var client = new KrakenApiClient(kraken, serializer);
+            var client = KrakenApi.ClientFactory.Create(uri);
 
             client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed: status={e.Message.Status}");
             client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}"); ;
@@ -48,7 +43,8 @@ namespace Kraken.WebSockets.Sample
             client.SpreadReceived += (sender, e) => Console.WriteLine($"Spread received");
             client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
             client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
-            await kraken.ConnectAsync();
+
+            await client.ConnectAsync();
 
             client.SubscriptionStatusChanged += async (sender, e) =>
             {

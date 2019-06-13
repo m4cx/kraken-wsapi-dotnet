@@ -42,6 +42,18 @@ namespace Kraken.WebSockets.Tests
 
         #endregion
 
+        #region ConnectAsync()
+
+        [Fact]
+        public async Task ConnectAsync_ShouldCallSocketConnectAsync()
+        {
+            await instance.ConnectAsync();
+
+            socket.Verify(x => x.ConnectAsync());
+        }
+
+        #endregion
+
         #region SubscribeAsync()
 
         [Fact]
