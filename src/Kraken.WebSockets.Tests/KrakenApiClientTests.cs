@@ -295,5 +295,36 @@ namespace Kraken.WebSockets.Tests
         }
 
         #endregion
+
+        #region Dispose()
+        [Fact]
+        public void Dispose_ShouldCloseSocket()
+        {
+            instance.Dispose();
+            socket.Verify(s => s.CloseAsync());
+        }
+
+        [Fact]
+        public void Dispose_ShouldUnsubscribeFromExistingSubscriptions()
+        {
+            serializer
+                .Setup(x => x.Deserialize<SubscriptionStatus>(It.Is<string>(y => y == TestSocketMessages.SubscriptionStatus1Message)))
+                .Returns(TestSocketMessages.SubscriptionStatus1);
+
+            socket.Raise(x => x.DataReceived += null, new KrakenMessageEventArgs(SubscriptionStatus.EventName, TestSocketMessages.SubscriptionStatus1Message));
+
+            instance.Dispose();
+            socket.Verify(s => s.SendAsync(It.Is<Unsubscribe>(u => u.ChannelId == 123)));
+        }
+
+        public void Dispose_ShouldCloseSocketOnlyOnce()
+        {
+            instance.Dispose();
+            instance.Dispose();
+
+            socket.Verify(s => s.CloseAsync(), Times.Once);
+        }
+
+        #endregion
     }
 }

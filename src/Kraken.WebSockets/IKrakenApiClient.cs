@@ -9,7 +9,7 @@ namespace Kraken.WebSockets
     /// <summary>
     /// This interface describes the client for the Kraken WebSocket API
     /// </summary>
-    public interface IKrakenApiClient
+    public interface IKrakenApiClient: IDisposable
     {
         /// <summary>
         /// Gets the system status.

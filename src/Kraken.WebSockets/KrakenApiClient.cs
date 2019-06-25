@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Extensions;
@@ -17,6 +18,8 @@ namespace Kraken.WebSockets
 
         private readonly IKrakenSocket socket;
         private readonly IKrakenMessageSerializer serializer;
+
+        private bool disposedValue = false;
 
         /// <summary>
         /// Gets the system status.
@@ -134,8 +137,42 @@ namespace Kraken.WebSockets
             }
 
             logger.Debug("Unsubscribe from subscription with channelId '{channelId}'", channelId);
-            await socket.SendAsync(new Unsubscribe(channelId));   
+            await socket.SendAsync(new Unsubscribe(channelId));
         }
+
+        #region IDisposable Support
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: Unsubscribe from all active subscriptions
+                    if (Subscriptions.Any())
+                    {
+                        foreach(var subscription in Subscriptions.Keys)
+                        {
+                            UnsubscribeAsync(subscription).GetAwaiter().GetResult();
+                        }
+                    }
+
+                    socket.CloseAsync().GetAwaiter().GetResult();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, 
+        /// releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
 
         #region Private Helper
 
