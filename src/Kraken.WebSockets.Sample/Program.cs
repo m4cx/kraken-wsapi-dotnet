@@ -20,7 +20,6 @@ namespace Kraken.WebSockets.Sample
             var uri = "wss://ws-beta.kraken.com";
             using (var client = KrakenApi.ClientFactory.Create(uri))
             {
-
                 Task.Run(() => RunKraken(client));
                 do
                 {
