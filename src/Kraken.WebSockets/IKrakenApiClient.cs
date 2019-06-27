@@ -59,15 +59,15 @@ namespace Kraken.WebSockets
         event EventHandler<KrakenDataEventArgs<BookSnapshotMessage>> BookSnapshotReceived;
 
         /// <summary>
+        /// Occurs when new book update information was received.
+        /// </summary>
+        event EventHandler<KrakenDataEventArgs<BookUpdateMessage>> BookUpdateReceived;
+
+        /// <summary>
         /// Connects to the websocket endpoint.
         /// </summary>
         /// <returns></returns>
         Task ConnectAsync();
-
-        /// <summary>
-        /// Occurs when new book update information was received.
-        /// </summary>
-        event EventHandler<KrakenDataEventArgs<BookUpdateMessage>> BookUpdateReceived;
 
         /// <summary>
         /// Creates a subscription.
