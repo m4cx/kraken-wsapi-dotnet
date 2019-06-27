@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 

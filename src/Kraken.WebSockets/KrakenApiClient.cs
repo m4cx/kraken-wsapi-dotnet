@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Extensions;
@@ -11,12 +12,14 @@ namespace Kraken.WebSockets
     /// <summary>
     /// Kraken API client.
     /// </summary>
-    public sealed class KrakenApiClient : IKrakenApiClient
+    internal sealed class KrakenApiClient : IKrakenApiClient
     {
         private static readonly ILogger logger = Log.ForContext<KrakenApiClient>();
 
         private readonly IKrakenSocket socket;
         private readonly IKrakenMessageSerializer serializer;
+
+        private bool disposedValue = false;
 
         /// <summary>
         /// Gets the system status.
@@ -80,7 +83,7 @@ namespace Kraken.WebSockets
         /// or
         /// serializer
         /// </exception>
-        public KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
+        internal KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
         {
             logger.Debug("Creating a new client instance");
             this.socket = socket ?? throw new ArgumentNullException(nameof(socket));
@@ -89,6 +92,17 @@ namespace Kraken.WebSockets
             // Add watch for incoming messages 
             logger.Debug("Applying incoming message handler");
             this.socket.DataReceived += HandleIncomingMessage;
+        }
+
+        /// <summary>
+        /// Connects to the websocket endpoint.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task ConnectAsync()
+        {
+            logger.Debug($"Connect to the websocket");
+            await socket.ConnectAsync();
         }
 
         /// <summary>
@@ -101,6 +115,7 @@ namespace Kraken.WebSockets
         {
             if (subscribe == null)
             {
+                logger.Error("No subscribe options passed to method");
                 throw new ArgumentNullException(nameof(subscribe));
             }
 
@@ -122,8 +137,42 @@ namespace Kraken.WebSockets
             }
 
             logger.Debug("Unsubscribe from subscription with channelId '{channelId}'", channelId);
-            await socket.SendAsync(new Unsubscribe(channelId));   
+            await socket.SendAsync(new Unsubscribe(channelId));
         }
+
+        #region IDisposable Support
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: Unsubscribe from all active subscriptions
+                    if (Subscriptions.Any())
+                    {
+                        foreach(var subscription in Subscriptions.Keys)
+                        {
+                            UnsubscribeAsync(subscription).GetAwaiter().GetResult();
+                        }
+                    }
+
+                    socket.CloseAsync().GetAwaiter().GetResult();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, 
+        /// releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
 
         #region Private Helper
 
@@ -233,7 +282,7 @@ namespace Kraken.WebSockets
                 Subscriptions.Add(value, currentStatus);
             }
         }
-        
+
         #endregion
     }
 }

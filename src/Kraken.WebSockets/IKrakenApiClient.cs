@@ -9,7 +9,7 @@ namespace Kraken.WebSockets
     /// <summary>
     /// This interface describes the client for the Kraken WebSocket API
     /// </summary>
-    public interface IKrakenApiClient
+    public interface IKrakenApiClient: IDisposable
     {
         /// <summary>
         /// Gets the system status.
@@ -32,6 +32,42 @@ namespace Kraken.WebSockets
         /// Occurs when subscription status changed.
         /// </summary>
         event EventHandler<KrakenMessageEventArgs<SubscriptionStatus>> SubscriptionStatusChanged;
+
+        /// <summary>
+        /// Occurs when a new ticker information was received.
+        /// </summary>
+        event EventHandler<KrakenDataEventArgs<TickerMessage>> TickerReceived;
+
+        /// <summary>
+        /// Occurs when new ohlc information was received.
+        /// </summary>
+        event EventHandler<KrakenDataEventArgs<OhlcMessage>> OhlcReceived;
+
+        /// <summary>
+        /// Occurs when new trade information was received.
+        /// </summary>
+        event EventHandler<KrakenDataEventArgs<TradeMessage>> TradeReceived;
+
+        /// <summary>
+        /// Occurs when new spread information was received.
+        /// </summary>
+        event EventHandler<KrakenDataEventArgs<SpreadMessage>> SpreadReceived;
+
+        /// <summary>
+        /// Occurs when new book snapshot information was received.
+        /// </summary>
+        event EventHandler<KrakenDataEventArgs<BookSnapshotMessage>> BookSnapshotReceived;
+
+        /// <summary>
+        /// Connects to the websocket endpoint.
+        /// </summary>
+        /// <returns></returns>
+        Task ConnectAsync();
+
+        /// <summary>
+        /// Occurs when new book update information was received.
+        /// </summary>
+        event EventHandler<KrakenDataEventArgs<BookUpdateMessage>> BookUpdateReceived;
 
         /// <summary>
         /// Creates a subscription.

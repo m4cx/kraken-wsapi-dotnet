@@ -9,8 +9,6 @@ namespace Kraken.WebSockets.Sample
     {
         private static readonly ILogger logger = Log.ForContext<Program>();
 
-        static KrakenWebSocket kraken;
-
         static void Main(string[] args)
         {
             // Configure logging
@@ -19,27 +17,21 @@ namespace Kraken.WebSockets.Sample
                 .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
-            Task.Run(RunKraken);
-            do
+            var uri = "wss://ws-beta.kraken.com";
+            using (var client = KrakenApi.ClientFactory.Create(uri))
             {
-                Console.WriteLine("Press [ESC] to exit.");
-            }
-            while (Console.ReadKey().Key != ConsoleKey.Escape);
 
-            if (kraken != null)
-            {
-                Task.Run(async () => await kraken.CloseAsync()).Wait();
+                Task.Run(() => RunKraken(client));
+                do
+                {
+                    Console.WriteLine("Press [ESC] to exit.");
+                }
+                while (Console.ReadKey().Key != ConsoleKey.Escape);
             }
         }
 
-        private static async Task RunKraken()
+        private static async Task RunKraken(IKrakenApiClient client)
         {
-            var uri = "wss://ws-beta.kraken.com";
-            var serializer = new KrakenMessageSerializer();
-            kraken = new KrakenWebSocket(uri, serializer);
-
-            var client = new KrakenApiClient(kraken, serializer);
-
             client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed: status={e.Message.Status}");
             client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}"); ;
             client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
@@ -48,7 +40,8 @@ namespace Kraken.WebSockets.Sample
             client.SpreadReceived += (sender, e) => Console.WriteLine($"Spread received");
             client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
             client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
-            await kraken.ConnectAsync();
+
+            await client.ConnectAsync();
 
             client.SubscriptionStatusChanged += async (sender, e) =>
             {
