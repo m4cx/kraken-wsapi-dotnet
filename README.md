@@ -22,21 +22,21 @@ For detailed information on the installing of pre-release versions please refer 
 ## Create a connection and listen for events
 Creating a connection is pretty easy but will also be improved in the future. But for now just do it like this:
 ```csharp
-var uri = "wss://ws-sandbox.kraken.com";
-var serializer = new KrakenMessageSerializer();
-kraken = new KrakenWebSocket(uri, serializer);
-
-var client = new KrakenApiClient(kraken, serializer);
-
-client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed");
-client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed"); ;
-client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
-client.OhlcReceived += (sender, e) => Console.WriteLine($"Ohlc received");
-client.TradeReceived += (sender, e) => Console.WriteLine($"Trade received");
-client.SpreadReceived += (sender, e) => Console.WriteLine($"Spread received");
-client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
-client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
-await kraken.ConnectAsync();
+using (var client = KrakenApi.ClientFactory.Create("wss://ws-sandbox.kraken.com")) 
+{
+    client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed");
+    client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed"); ;
+    client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
+    client.OhlcReceived += (sender, e) => Console.WriteLine($"Ohlc received");
+    client.TradeReceived += (sender, e) => Console.WriteLine($"Trade received");
+    client.SpreadReceived += (sender, e) => Console.WriteLine($"Spread received");
+    client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
+    client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
+    
+    await kraken.ConnectAsync();
+    // Do something with it and keep the connection open
+}
+// closing the using-block the connection will be closed and disposed.
 ```
 You can also find a running example in the repository.
 
