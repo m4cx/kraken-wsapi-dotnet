@@ -1,5 +1,12 @@
-# 0.1.0 (2019-04-11)
+# [0.1.1](https://github.com/m4cx/kraken-wsapi-dotnet/compare/v0.1.1...v0.1.0) (2019-07-12)
 
+
+### Bug Fixes
+
+* support current websocket api version 0.2.0 ([173b466](https://github.com/m4cx/kraken-wsapi-dotnet/commit/173b466)), closes [#26](https://github.com/m4cx/kraken-wsapi-dotnet/issues/26)
+
+
+# 0.1.0 (2019-04-11)
 
 ### Features
 
@@ -13,7 +20,3 @@
 * **trade:** handle trade messages from websocket ([c9ef828](https://github.com/m4cx/kraken-wsapi-dotnet/commit/c9ef828))
 * **unsubscribe:** unsubscribe from api based on provided channelId ([b832f72](https://github.com/m4cx/kraken-wsapi-dotnet/commit/b832f72))
 * **websocket:** add simple websocket handler ([c3caa75](https://github.com/m4cx/kraken-wsapi-dotnet/commit/c3caa75))
-
-
-
-
