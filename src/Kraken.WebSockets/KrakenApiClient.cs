@@ -36,6 +36,11 @@ namespace Kraken.WebSockets
         /// <summary>
         /// Occurs when system status changed.
         /// </summary>
+        public event EventHandler<KrakenMessageEventArgs<Heartbeat>> HeartbeatReceived;
+
+        /// <summary>
+        /// Occurs when system status changed.
+        /// </summary>
         public event EventHandler<KrakenMessageEventArgs<SystemStatus>> SystemStatusChanged;
 
         /// <summary>
@@ -182,6 +187,12 @@ namespace Kraken.WebSockets
 
             switch (eventArgs.Event)
             {
+                case Heartbeat.EventName:
+                    var heartbeat = serializer.Deserialize<Heartbeat>(eventArgs.RawContent);
+                    logger.Verbose("Heartbeat received: {@heartbeat}", heartbeat);
+                    HeartbeatReceived.InvokeAll(this, heartbeat);
+                    break;
+
                 case SystemStatus.EventName:
                     var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
                     logger.Verbose("System status changed: {@systemStatus}", systemStatus);
