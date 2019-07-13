@@ -111,36 +111,13 @@ namespace Kraken.WebSockets
 
         private async Task StartListening()
         {
-            var buffer = new byte[1024];
-
             try
             {
                 while (webSocket.State == WebSocketState.Open)
                 {
-                    var messageParts = new StringBuilder();
                     logger.Debug("Waiting for new message");
-                    WebSocketReceiveResult result;
-                    do
-                    {
-                        result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    var message = await ReadNextMessage();
 
-                        if (result.MessageType == WebSocketMessageType.Close)
-                        {
-                            logger.Debug("Closing connection to socket");
-                            await
-                                webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                            logger.Debug("Connection successfully closed");
-                            // TODO: Disconnected-Event
-                        }
-                        else
-                        {
-                            var str = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                            messageParts.Append(str);
-                        }
-
-                    } while (!result.EndOfMessage);
-
-                    var message = messageParts.ToString();
                     logger.Debug("Received new message from websocket");
                     logger.Verbose("Received: {message}", message);
 
@@ -155,12 +132,10 @@ namespace Kraken.WebSockets
                             var messageObj = JObject.Parse(message);
                             eventString = (string)messageObj.GetValue("event");
                         }
-                        else if (token is JArray)
+                        else if (token is JArray arrayToken)
                         {
-                            var arrayToken = token as JArray;
                             channelId = (int)arrayToken.First;
                             eventString = "data";
-                    
                         }
                     }
 
@@ -169,7 +144,7 @@ namespace Kraken.WebSockets
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Error while listenening or reading new messages from WebSocket");
+                logger.Error(ex, "Error while listening or reading new messages from WebSocket");
                 // TODO: Disconnected-Event
                 throw;
             }
@@ -178,6 +153,35 @@ namespace Kraken.WebSockets
                 logger.Information("Closing WebSocket");
                 webSocket.Dispose();
             }
+        }
+
+        private async Task<string> ReadNextMessage()
+        {
+            var buffer = new byte[1024];
+
+            var messageParts = new StringBuilder();
+
+            WebSocketReceiveResult result;
+            do
+            {
+                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    logger.Debug("Closing connection to socket");
+                    await
+                        webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                    logger.Debug("Connection successfully closed");
+                    // TODO: Disconnected-Event
+                }
+                else
+                {
+                    var str = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    messageParts.Append(str);
+                }
+            } while (!result.EndOfMessage);
+
+            var message = messageParts.ToString();
+            return message;
         }
 
         private void InvokeConnected()
