@@ -101,22 +101,22 @@ jobs:
     inputs:
       pathtoPublish: "$(Build.ArtifactStagingDirectory)"
       artifactName: "drop"
-- job: "DeployRelease"
-  displayName: "Deploy Release"
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
-  dependsOn: "BuildRelease"
-  steps:
-  # Download artifacts
-  - task: DownloadBuildArtifacts@0
-    displayName: "Download files"
-    inputs:
-      artifactName: "drop"
-      downloadPath: $(System.DefaultWorkingDirectory)
-  # Publish NuGet Package
-  - task: NuGetCommand@2
-    displayName: "Publish Release to NuGet Gallery"
-    inputs:
-      command: push
-      nuGetFeedType: external
-      publishFeedCredentials: 'Official NuGet'
-      packagesToPush: '$(System.DefaultWorkingDirectory)/**/*.nupkg;!$(System.DefaultWorkingDirectory)/**/*.symbols.nupkg'
+# - job: "DeployRelease"
+#   displayName: "Deploy Release"
+#   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+#   dependsOn: "BuildRelease"
+#   steps:
+#   # Download artifacts
+#   - task: DownloadBuildArtifacts@0
+#     displayName: "Download files"
+#     inputs:
+#       artifactName: "drop"
+#       downloadPath: $(System.DefaultWorkingDirectory)
+#   # Publish NuGet Package
+#   - task: NuGetCommand@2
+#     displayName: "Publish Release to NuGet Gallery"
+#     inputs:
+#       command: push
+#       nuGetFeedType: external
+#       publishFeedCredentials: 'Official NuGet'
+#       packagesToPush: '$(System.DefaultWorkingDirectory)/**/*.nupkg;!$(System.DefaultWorkingDirectory)/**/*.symbols.nupkg'
