@@ -1,4 +1,19 @@
-# [0.1.1](https://github.com/m4cx/kraken-wsapi-dotnet/compare/v0.1.1...v0.1.0) (2019-07-12)
+# [0.2.0](https://github.com/m4cx/kraken-wsapi-dotnet/releases/tag/0.2.0) (2019-06-27)
+
+
+### Bug Fixes
+
+* **events:** add missing events to interface ([68600a1](https://github.com/m4cx/kraken-wsapi-dotnet/commit/68600a1))
+
+
+### Features
+
+* **client:** introduce new client factory to create connections easily ([435a63f](https://github.com/m4cx/kraken-wsapi-dotnet/commit/435a63f)), closes [#22](https://github.com/m4cx/kraken-wsapi-dotnet/issues/22)
+* **client:** support IDisposable pattern for client ([a6b4c1d](https://github.com/m4cx/kraken-wsapi-dotnet/commit/a6b4c1d)), closes [#23](https://github.com/m4cx/kraken-wsapi-dotnet/issues/23)
+
+
+
+# [0.1.1](https://github.com/m4cx/kraken-wsapi-dotnet/releases/tag/0.1.1) (2019-06-13)
 
 
 ### Bug Fixes
