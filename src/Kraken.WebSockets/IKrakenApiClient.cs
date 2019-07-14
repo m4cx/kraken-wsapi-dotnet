@@ -26,6 +26,11 @@ namespace Kraken.WebSockets
         /// <summary>
         /// Occurs when system status changed.
         /// </summary>
+        event EventHandler<KrakenMessageEventArgs<Heartbeat>> HeartbeatReceived;
+
+        /// <summary>
+        /// Occurs when system status changed.
+        /// </summary>
         event EventHandler<KrakenMessageEventArgs<SystemStatus>> SystemStatusChanged;
 
         /// <summary>

@@ -14,11 +14,10 @@ namespace Kraken.WebSockets.Sample
             // Configure logging
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.Console()
                 .CreateLogger();
 
-            var uri = "wss://ws-beta.kraken.com";
-            using (var client = KrakenApi.ClientFactory.Create(uri))
+            using (var client = KrakenApi.ClientFactory.Create("wss://ws-beta.kraken.com"))
             {
                 Task.Run(() => RunKraken(client));
                 do
@@ -51,7 +50,7 @@ namespace Kraken.WebSockets.Sample
                 }
             };
 
-            await client.SubscribeAsync(new Subscribe(new[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All)));
+            await client.SubscribeAsync(new Subscribe(new[] { Pair.XBT_EUR }, new SubscribeOptions(SubscribeOptionNames.All)));
         }
     }
 }
