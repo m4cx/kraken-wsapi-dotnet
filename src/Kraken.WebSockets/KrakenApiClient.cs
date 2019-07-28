@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Extensions;
+using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Kraken.WebSockets
 {
@@ -14,7 +15,7 @@ namespace Kraken.WebSockets
     /// </summary>
     internal sealed class KrakenApiClient : IKrakenApiClient
     {
-        private static readonly ILogger logger = Log.ForContext<KrakenApiClient>();
+        private static readonly ILogger<KrakenApiClient> logger = LogManager.GetLogger<KrakenApiClient>();
 
         private readonly IKrakenSocket socket;
         private readonly IKrakenMessageSerializer serializer;
@@ -32,6 +33,11 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <value>The subscriptions.</value>
         public IDictionary<int, SubscriptionStatus> Subscriptions { get; } = new Dictionary<int, SubscriptionStatus>();
+
+        /// <summary>
+        /// Occurs when system status changed.
+        /// </summary>
+        public event EventHandler<KrakenMessageEventArgs<Heartbeat>> HeartbeatReceived;
 
         /// <summary>
         /// Occurs when system status changed.
@@ -85,12 +91,12 @@ namespace Kraken.WebSockets
         /// </exception>
         internal KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
         {
-            logger.Debug("Creating a new client instance");
+            logger.LogDebug("Creating a new client instance");
             this.socket = socket ?? throw new ArgumentNullException(nameof(socket));
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
             // Add watch for incoming messages 
-            logger.Debug("Applying incoming message handler");
+            logger.LogDebug("Applying incoming message handler");
             this.socket.DataReceived += HandleIncomingMessage;
         }
 
@@ -101,7 +107,7 @@ namespace Kraken.WebSockets
         /// <exception cref="NotImplementedException"></exception>
         public async Task ConnectAsync()
         {
-            logger.Debug($"Connect to the websocket");
+            logger.LogDebug("Connect to the websocket");
             await socket.ConnectAsync();
         }
 
@@ -115,11 +121,11 @@ namespace Kraken.WebSockets
         {
             if (subscribe == null)
             {
-                logger.Error("No subscribe options passed to method");
+                logger.LogError("No subscribe options passed to method");
                 throw new ArgumentNullException(nameof(subscribe));
             }
 
-            logger.Debug("Adding subscription: {@subscribe}", subscribe);
+            logger.LogDebug("Adding subscription: {subscribe}", subscribe);
             await socket.SendAsync(subscribe);
         }
 
@@ -136,7 +142,7 @@ namespace Kraken.WebSockets
                 throw new ArgumentOutOfRangeException(nameof(channelId));
             }
 
-            logger.Debug("Unsubscribe from subscription with channelId '{channelId}'", channelId);
+            logger.LogDebug("Unsubscribe from subscription with channelId '{channelId}'", channelId);
             await socket.SendAsync(new Unsubscribe(channelId));
         }
 
@@ -178,20 +184,26 @@ namespace Kraken.WebSockets
 
         private void HandleIncomingMessage(object sender, KrakenMessageEventArgs eventArgs)
         {
-            logger.Debug("Handling incoming '{event}' message", eventArgs.Event);
+            logger.LogDebug("Handling incoming '{event}' message", eventArgs.Event);
 
             switch (eventArgs.Event)
             {
+                case Heartbeat.EventName:
+                    var heartbeat = serializer.Deserialize<Heartbeat>(eventArgs.RawContent);
+                    logger.LogTrace("Heartbeat received: {heartbeat}", heartbeat);
+                    HeartbeatReceived.InvokeAll(this, heartbeat);
+                    break;
+
                 case SystemStatus.EventName:
                     var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
-                    logger.Verbose("System status changed: {@systemStatus}", systemStatus);
+                    logger.LogTrace("System status changed: {systemStatus}", systemStatus);
                     SystemStatus = systemStatus;
                     SystemStatusChanged.InvokeAll(this, systemStatus);
                     break;
 
                 case SubscriptionStatus.EventName:
                     var subscriptionStatus = serializer.Deserialize<SubscriptionStatus>(eventArgs.RawContent);
-                    logger.Verbose("Subscription status changed: {@subscriptionStatus}", subscriptionStatus);
+                    logger.LogTrace("Subscription status changed: {subscriptionStatus}", subscriptionStatus);
 
                     SynchronizeSubscriptions(subscriptionStatus);
                     SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
@@ -203,7 +215,7 @@ namespace Kraken.WebSockets
                     var subscription = Subscriptions.ContainsKey(eventArgs.ChannelId.Value) ? Subscriptions[eventArgs.ChannelId.Value] : null;
                     if (subscription == null)
                     {
-                        logger.Warning($"Didn't find a subscription for channelId={eventArgs.ChannelId}");
+                        logger.LogWarning("Didn't find a subscription for channelId {channelId}", eventArgs.ChannelId);
                         break;
                     }
 
@@ -246,7 +258,7 @@ namespace Kraken.WebSockets
                     break;
 
                 default:
-                    logger.Warning("Could not handle incoming message: {@message}", eventArgs.RawContent);
+                    logger.LogWarning("Could not handle incoming message: {message}", eventArgs.RawContent);
                     break;
             }
         }
@@ -255,7 +267,7 @@ namespace Kraken.WebSockets
         {
             if (currentStatus.ChannelId == null || !currentStatus.ChannelId.HasValue)
             {
-                logger.Warning("SubscriptionStatus has no channelID");
+                logger.LogWarning("SubscriptionStatus has no channelID");
                 // no channelID --> error?
                 return;
             }
@@ -267,7 +279,7 @@ namespace Kraken.WebSockets
                 if (!Subscriptions.ContainsKey(channelIdValue)) return;
 
                 Subscriptions.Remove(channelIdValue);
-                logger.Debug("Subscription for {channelID} successfully removed", channelIdValue);
+                logger.LogDebug("Subscription for {channelID} successfully removed", channelIdValue);
                 return;
             }
 

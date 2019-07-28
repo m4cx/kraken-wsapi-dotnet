@@ -278,6 +278,21 @@ namespace Kraken.WebSockets.Tests
         }
 
         [Fact]
+        public void KrakenDataMessage_HeartbeatIsReceivedAndPropagatedThroughEvent()
+        {
+            bool handlerExecuted = false;
+            instance.HeartbeatReceived += (sender, e) =>
+            {
+                Assert.Null(e.Message);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs("heartbeat", @"{""event"":""heartbeat""}"));
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
         public void KrakenDataMessage_UnknownDataNoEventIsEmitted()
         {
             bool handlerExecuted = false;
@@ -317,6 +332,7 @@ namespace Kraken.WebSockets.Tests
             socket.Verify(s => s.SendAsync(It.Is<Unsubscribe>(u => u.ChannelId == 123)));
         }
 
+        [Fact]
         public void Dispose_ShouldCloseSocketOnlyOnce()
         {
             instance.Dispose();

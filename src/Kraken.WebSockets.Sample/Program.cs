@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace Kraken.WebSockets.Sample
 {
     class Program
     {
-        private static readonly ILogger logger = Log.ForContext<Program>();
 
         static void Main(string[] args)
         {
-            // Configure logging
-            Log.Logger = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.Console()
                 .CreateLogger();
 
-            var uri = "wss://ws-beta.kraken.com";
-            using (var client = KrakenApi.ClientFactory.Create(uri))
-            {
+            new LoggerFactory()
+                .AddKrakenWebSockets()
+                .AddSerilog(logger);
 
+            using (var client = KrakenApi.ClientFactory.Create("wss://ws.kraken.com"))
+            {
                 Task.Run(() => RunKraken(client));
                 do
                 {
@@ -32,6 +34,7 @@ namespace Kraken.WebSockets.Sample
 
         private static async Task RunKraken(IKrakenApiClient client)
         {
+            client.HeartbeatReceived += (sender, e) => Console.WriteLine("Heartbeat received");
             client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed: status={e.Message.Status}");
             client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}"); ;
             client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
@@ -52,7 +55,7 @@ namespace Kraken.WebSockets.Sample
                 }
             };
 
-            await client.SubscribeAsync(new Subscribe(new[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All)));
+            await client.SubscribeAsync(new Subscribe(new[] { Pair.XBT_EUR }, new SubscribeOptions(SubscribeOptionNames.All)));
         }
     }
 }

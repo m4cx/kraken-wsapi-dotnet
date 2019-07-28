@@ -20,6 +20,7 @@ namespace Kraken.WebSockets.Tests
 
         #region Ctor
 
+        [Fact]
         public void Ctor_SerializerNull_ThrowsArgumentNullException()
         {
             Assert.Equal("serializer",

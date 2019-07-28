@@ -17,12 +17,6 @@ namespace Kraken.WebSockets
         /// <value>
         /// The client factory.
         /// </value>
-        public static IKrakenApiClientFactory ClientFactory
-        {
-            get
-            {
-                return factory.Value;
-            }
-        }
+        public static IKrakenApiClientFactory ClientFactory => factory.Value;
     }
 }
