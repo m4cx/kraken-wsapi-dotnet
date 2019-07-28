@@ -14,7 +14,7 @@ namespace Kraken.WebSockets.Tests.Logging
         [Fact]
         public void LoggerFactory_Get_ReturnsNullLoggerFactoryAsDefault()
         {
-            Assert.IsType<NullLoggerFactory>(LogManager.LoggerFactory);
+            Assert.IsAssignableFrom<ILoggerFactory>(LogManager.LoggerFactory);
         }
 
         #endregion

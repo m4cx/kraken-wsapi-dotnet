@@ -57,6 +57,8 @@ With the `Microsoft.Extensions.Logging.Abstractions` in place you are not limite
 - NLog
 - ... and many more
 
+To enable the logging just call the provided extension method on your ```ILoggerFactory``` of your application.
+
 ```csharp
 // Using the logging from ASP.NET Core MVC
 // Startup.cs
@@ -70,8 +72,7 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerF
 
     loggerFactory.AddKrakenWebSockets(); // Enables the configured logging factory for the logs in Kraken.WebSockets
 
-        // ... source omitted
-
+    // ... source omitted
 }
 
 ```
