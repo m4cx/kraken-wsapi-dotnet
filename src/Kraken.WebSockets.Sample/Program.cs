@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace Kraken.WebSockets.Sample
 {
     class Program
     {
-        private static readonly ILogger logger = Log.ForContext<Program>();
 
         static void Main(string[] args)
         {
-            // Configure logging
-            Log.Logger = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.Console()
                 .CreateLogger();
 
-            using (var client = KrakenApi.ClientFactory.Create("wss://ws-beta.kraken.com"))
+            new LoggerFactory()
+                .AddKrakenWebSockets()
+                .AddSerilog(logger);
+
+            using (var client = KrakenApi.ClientFactory.Create("wss://ws.kraken.com"))
             {
                 Task.Run(() => RunKraken(client));
                 do

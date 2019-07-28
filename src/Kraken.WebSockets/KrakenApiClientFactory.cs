@@ -17,7 +17,7 @@ namespace Kraken.WebSockets
         /// <param name="serializer">The serializer.</param>
         public KrakenApiClientFactory(IKrakenMessageSerializer serializer)
         {
-            this.serializer = serializer;
+            this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         }
 
         /// <summary>
