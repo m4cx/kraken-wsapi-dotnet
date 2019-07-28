@@ -332,6 +332,7 @@ namespace Kraken.WebSockets.Tests
             socket.Verify(s => s.SendAsync(It.Is<Unsubscribe>(u => u.ChannelId == 123)));
         }
 
+        [Fact]
         public void Dispose_ShouldCloseSocketOnlyOnce()
         {
             instance.Dispose();
