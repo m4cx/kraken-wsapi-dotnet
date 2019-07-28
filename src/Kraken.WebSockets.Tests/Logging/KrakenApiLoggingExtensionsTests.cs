@@ -10,14 +10,14 @@ namespace Kraken.WebSockets.Tests.Logging
     [ExcludeFromCodeCoverage]
     public class KrakenApiLoggingExtensionsTests
     {
-        #region EnableLogging()
+        #region AddKrakenWebSockets()
 
         [Fact]
         public void EnableLogging_LoggingFactoryNull_ThrowsArgumentNullException()
         {
             Assert.Equal("loggerFactory",
                 Assert.Throws<ArgumentNullException>(
-                    () => KrakenApiLoggingExtensions.EnableLogging(null)).ParamName);
+                    () => KrakenApiLoggingExtensions.AddKrakenWebSockets(null)).ParamName);
         }
 
         [Fact]
@@ -25,7 +25,7 @@ namespace Kraken.WebSockets.Tests.Logging
         {
             var factoryMock = new Mock<ILoggerFactory>();
 
-            factoryMock.Object.EnableLogging();
+            factoryMock.Object.AddKrakenWebSockets();
 
             Assert.Equal(factoryMock.Object, LogManager.LoggerFactory);
         }

@@ -13,7 +13,7 @@ namespace Kraken.WebSockets.Logging
         /// </summary>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <returns></returns>
-        public static ILoggerFactory EnableLogging(this ILoggerFactory loggerFactory)
+        public static ILoggerFactory AddKrakenWebSockets(this ILoggerFactory loggerFactory)
         {
             LogManager.LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             return loggerFactory;

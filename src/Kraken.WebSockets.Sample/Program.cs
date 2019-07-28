@@ -18,7 +18,7 @@ namespace Kraken.WebSockets.Sample
                 .CreateLogger();
 
             new LoggerFactory()
-                .EnableLogging()
+                .AddKrakenWebSockets()
                 .AddSerilog(logger);
 
             using (var client = KrakenApi.ClientFactory.Create("wss://ws.kraken.com"))
