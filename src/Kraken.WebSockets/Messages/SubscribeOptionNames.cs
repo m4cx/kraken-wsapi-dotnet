@@ -5,7 +5,10 @@ namespace Kraken.WebSockets.Messages
     /// <summary>
     /// Subscribe option names.
     /// </summary>
-    /// <remarks>ticker|ohlc|trade|book|spread|*</remarks>
+    /// <remarks>
+    /// public: ticker|ohlc|trade|book|spread|*
+    /// private: ownTrades (you need to provide an authentication token)
+    /// </remarks>
     public static class SubscribeOptionNames
     {
         /// <summary>
@@ -44,6 +47,11 @@ namespace Kraken.WebSockets.Messages
         /// </summary>
         public const string Spread = "spread";
 
+        /// <summary>
+        /// Own trades, on subscription last 50 trades for the user will be sent, followed by new trades.
+        /// </summary>
+        public const string OwnTrades = "ownTrades";
+
         internal static IEnumerable<string> AllowedNames
         {
             get
@@ -55,7 +63,13 @@ namespace Kraken.WebSockets.Messages
                 yield return Trade;
                 yield return Book;
                 yield return Spread;
+                yield return OwnTrades;
             }
+        }
+
+        internal static IEnumerable<string> PrivateNames
+        {
+            get { yield return OwnTrades; }
         }
     }
 }
