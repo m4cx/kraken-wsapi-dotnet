@@ -112,8 +112,18 @@ namespace Kraken.WebSockets.Messages
         {
             return new TradeObject()
             {
-                TradeId = tradeId
-
+                TradeId = tradeId,
+                OrderTxId = jObject.Value<string>("ordertxid"),
+                PosTxId = jObject.Value<string>("postxid"),
+                Pair = jObject.Value<string>("pair"),
+                Time = jObject.Value<decimal>("time"),
+                Type = jObject.Value<string>("type"),
+                OrderType = jObject.Value<string>("ordertype"),
+                Price = jObject.Value<decimal>("price"),
+                Cost = jObject.Value<decimal>("cost"),
+                Fee = jObject.Value<decimal>("fee"),
+                Volume = jObject.Value<decimal>("vol"),
+                Margin = jObject.Value<decimal>("margin"),
             };
         }
     }

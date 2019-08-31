@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.DataCollection;
 using Moq;
 using Xunit;
 
@@ -289,6 +290,21 @@ namespace Kraken.WebSockets.Tests
 
             socket.Raise(x => x.DataReceived += null,
                 new KrakenMessageEventArgs("heartbeat", @"{""event"":""heartbeat""}"));
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
+        public void KrakenDataMessage_OwnTradesIsReceivedAndPropagatedThroughEvent()
+        {
+            bool handlerExecuted = false;
+            instance.OwnTradesReceived += (sender, args) =>
+            {
+                Assert.IsType<OwnTradesMessage>(args.PrivateMessage);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs("private", TestSocketMessages.OwnTradesMessage));
             Assert.True(handlerExecuted);
         }
 

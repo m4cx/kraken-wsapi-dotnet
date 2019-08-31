@@ -42,7 +42,7 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Equal(value, new SubscribeOptions(value).Name);
         }
 
-        [Theory]
+        [Theory(Skip = "Transform to separate handling for private messages")]
         [InlineData(SubscribeOptionNames.OwnTrades, null)]
         [InlineData(SubscribeOptionNames.OwnTrades, "")]
         public void Ctor_ValuePrivateTokenEmpty_ThrowsArgumentNullException(string name, string token)

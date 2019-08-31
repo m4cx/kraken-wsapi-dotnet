@@ -80,6 +80,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenDataEventArgs<BookUpdateMessage>> BookUpdateReceived;
 
         /// <summary>
+        /// Occurs when own trades information was received.
+        /// </summary>
+        public event EventHandler<KrakenPrivateEventArgs<OwnTradesMessage>> OwnTradesReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -210,6 +215,18 @@ namespace Kraken.WebSockets
 
                     break;
 
+                case "private":
+
+                    // handle private content
+                    if (eventArgs.RawContent.Contains(@"""ownTrades"""))
+                    {
+                        var ownTrades = OwnTradesMessage.CreateFromString(eventArgs.RawContent);
+                        OwnTradesReceived.InvokeAll(this, new KrakenPrivateEventArgs<OwnTradesMessage>(ownTrades));
+
+                    }
+
+                    break;
+
                 case "data":
 
                     var subscription = Subscriptions.ContainsKey(eventArgs.ChannelId.Value) ? Subscriptions[eventArgs.ChannelId.Value] : null;
@@ -296,5 +313,7 @@ namespace Kraken.WebSockets
         }
 
         #endregion
+
+        
     }
 }

@@ -164,7 +164,7 @@ namespace Kraken.WebSockets.Tests
 
         #endregion
 
-        #region OwnTrades
+        #region OwnTradesReceived
 
         public static string OwnTradesMessage => File.ReadAllText("data/ownTrades.json");
 

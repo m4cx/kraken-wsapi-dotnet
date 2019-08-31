@@ -128,15 +128,22 @@ namespace Kraken.WebSockets
                     if (!string.IsNullOrEmpty(message))
                     {
                         var token = JToken.Parse(message);
-                        if (token is JObject)
+                        switch (token)
                         {
-                            var messageObj = JObject.Parse(message);
-                            eventString = (string)messageObj.GetValue("event");
-                        }
-                        else if (token is JArray arrayToken)
-                        {
-                            channelId = (int)arrayToken.First;
-                            eventString = "data";
+                            case JObject _:
+                                var messageObj = JObject.Parse(message);
+                                eventString = (string)messageObj.GetValue("event");
+                                break;
+
+                            case JArray arrayToken:
+                                // Data / private messages
+                                if (int.TryParse(arrayToken.First.ToString(), out var localChannelId))
+                                {
+                                    channelId = localChannelId;
+                                }
+
+                                eventString = channelId != null ? "data" : "private";
+                                break;
                         }
                     }
 
