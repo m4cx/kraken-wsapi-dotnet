@@ -207,11 +207,18 @@ namespace Kraken.WebSockets
                     break;
 
                 case SubscriptionStatus.EventName:
-                    var subscriptionStatus = serializer.Deserialize<SubscriptionStatus>(eventArgs.RawContent);
-                    logger.LogTrace("Subscription status changed: {subscriptionStatus}", subscriptionStatus);
+                    try
+                    {
+                        var subscriptionStatus = serializer.Deserialize<SubscriptionStatus>(eventArgs.RawContent);
+                        logger.LogTrace("Subscription status changed: {subscriptionStatus}", subscriptionStatus);
 
-                    SynchronizeSubscriptions(subscriptionStatus);
-                    SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
+                        SynchronizeSubscriptions(subscriptionStatus);
+                        SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Failed to deserialize subscription status: {message}", eventArgs.RawContent);
+                    }
 
                     break;
 
@@ -222,7 +229,6 @@ namespace Kraken.WebSockets
                     {
                         var ownTrades = OwnTradesMessage.CreateFromString(eventArgs.RawContent);
                         OwnTradesReceived.InvokeAll(this, new KrakenPrivateEventArgs<OwnTradesMessage>(ownTrades));
-
                     }
 
                     break;
