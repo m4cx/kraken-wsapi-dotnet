@@ -111,3 +111,7 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerF
 If you like the stuff I do, please don't hesitate to support my actions by donating me a coffee!
 
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/rkqS0BIKu"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">Buy me a coffee</span></a><br/><br/><a href="https://www.paypal.me/maikschoeneich"><img src="https://www.paypalobjects.com/webstatic/de_DE/i/de-pp-logo-100px.png"/>-Me</a>
+
+# Analytics
+
+[![](https://codescene.io/projects/5639/status.svg) Get more details at **codescene.io**.](https://codescene.io/projects/5639/jobs/latest-successful/results)
