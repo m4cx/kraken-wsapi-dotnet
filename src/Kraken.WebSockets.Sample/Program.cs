@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
@@ -7,6 +8,7 @@ using Serilog;
 
 namespace Kraken.WebSockets.Sample
 {
+    [ExcludeFromCodeCoverage]
     class Program
     {
 
@@ -21,7 +23,7 @@ namespace Kraken.WebSockets.Sample
                 .AddKrakenWebSockets()
                 .AddSerilog(logger);
 
-            using (var client = KrakenApi.ClientFactory.Create("wss://ws.kraken.com"))
+            using (var client = KrakenApi.ClientFactory.Create("wss://ws-sandbox.kraken.com"))
             {
                 Task.Run(() => RunKraken(client));
                 do
@@ -43,6 +45,7 @@ namespace Kraken.WebSockets.Sample
             client.SpreadReceived += (sender, e) => Console.WriteLine($"Spread received");
             client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
             client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
+            client.OwnTradesReceived += (sender, e) => Console.WriteLine($"OwnTrades received");
 
             await client.ConnectAsync();
 
@@ -56,6 +59,7 @@ namespace Kraken.WebSockets.Sample
             };
 
             await client.SubscribeAsync(new Subscribe(new[] { Pair.XBT_EUR }, new SubscribeOptions(SubscribeOptionNames.All)));
+            await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OwnTrades, "YXBpS2V5NDMyOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==")));
         }
     }
 }

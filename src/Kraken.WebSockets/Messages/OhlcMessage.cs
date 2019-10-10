@@ -98,8 +98,7 @@ namespace Kraken.WebSockets.Messages
         /// Prevents a default instance of the <see cref="OhlcMessage"/> class from being created.
         /// </summary>
         private OhlcMessage()
-        {
-        }
+        { }
 
         /// <summary>
         /// Creates a new <see cref="OhlcMessage" /> from well-formed string.
