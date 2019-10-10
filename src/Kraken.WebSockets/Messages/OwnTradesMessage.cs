@@ -13,6 +13,11 @@ namespace Kraken.WebSockets.Messages
         private OwnTradesMessage()
         { }
 
+        /// <summary>
+        /// Creates the <see cref="OwnTradesMessage"/> from it's from string representation coming from the api.
+        /// </summary>
+        /// <param name="rawMessage">The raw message.</param>
+        /// <returns></returns>
         public static OwnTradesMessage CreateFromString(string rawMessage)
         {
             var message = KrakenDataMessageHelper.EnsureRawMessage(rawMessage);
@@ -37,8 +42,20 @@ namespace Kraken.WebSockets.Messages
 
         }
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
         public string Name { get; private set; }
 
+        /// <summary>
+        /// Gets the list of trades.
+        /// </summary>
+        /// <value>
+        /// The list of trades.
+        /// </value>
         public List<TradeObject> Trades { get; private set; } = new List<TradeObject>();
     }
 }

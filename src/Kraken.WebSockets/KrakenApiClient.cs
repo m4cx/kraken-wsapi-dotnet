@@ -15,7 +15,7 @@ namespace Kraken.WebSockets
     /// </summary>
     internal sealed class KrakenApiClient : IKrakenApiClient
     {
-        private static readonly ILogger<KrakenApiClient> logger = LogManager.GetLogger<KrakenApiClient>();
+        private static readonly ILogger<KrakenApiClient> logger = LogManager.CreateLogger<KrakenApiClient>();
 
         private readonly IKrakenSocket socket;
         private readonly IKrakenMessageSerializer serializer;

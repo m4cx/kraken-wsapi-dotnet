@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
+[assembly: CollectionBehavior(MaxParallelThreads = 1, DisableTestParallelization = true)]
+
 namespace Kraken.WebSockets.Tests
 {
     [ExcludeFromCodeCoverage]

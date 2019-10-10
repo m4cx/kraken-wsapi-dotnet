@@ -2,8 +2,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
+using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.DataCollection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 
@@ -18,8 +19,10 @@ namespace Kraken.WebSockets.Tests
 
         public KrakenApiClientTests()
         {
+            LogManager.LoggerFactory = new NullLoggerFactory();
             socket = new Mock<IKrakenSocket>();
             serializer = new Mock<IKrakenMessageSerializer>();
+
             instance = new KrakenApiClient(socket.Object, serializer.Object);
         }
 

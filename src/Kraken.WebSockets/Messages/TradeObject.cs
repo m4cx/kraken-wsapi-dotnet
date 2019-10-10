@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace Kraken.WebSockets.Messages
 {
@@ -110,9 +111,14 @@ namespace Kraken.WebSockets.Messages
 
         public static TradeObject CreateFromJObject(string tradeId, JObject jObject)
         {
+            if (jObject == null)
+            {
+                throw new ArgumentNullException(nameof(jObject));
+            }
+
             return new TradeObject()
             {
-                TradeId = tradeId,
+                TradeId = tradeId ?? throw new ArgumentNullException(nameof(tradeId)),
                 OrderTxId = jObject.Value<string>("ordertxid"),
                 PosTxId = jObject.Value<string>("postxid"),
                 Pair = jObject.Value<string>("pair"),

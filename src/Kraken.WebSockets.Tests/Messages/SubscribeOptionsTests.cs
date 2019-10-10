@@ -47,7 +47,7 @@ namespace Kraken.WebSockets.Tests.Messages
         [InlineData(SubscribeOptionNames.OwnTrades, "")]
         public void Ctor_ValuePrivateTokenEmpty_ThrowsArgumentNullException(string name, string token)
         {
-            Assert.Equal("token", Assert.Throws<ArgumentNullException>(() => new SubscribeOptions(name)).ParamName);
+            Assert.Equal("token", Assert.Throws<ArgumentNullException>(() => new SubscribeOptions(name, token)).ParamName);
         }
 
         [Theory]

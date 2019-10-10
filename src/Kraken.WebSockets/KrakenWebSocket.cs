@@ -16,7 +16,7 @@ namespace Kraken.WebSockets
     /// </summary>
     public sealed class KrakenWebSocket : IKrakenSocket
     {
-        private static readonly ILogger<KrakenWebSocket> logger = LogManager.GetLogger<KrakenWebSocket>();
+        private static readonly ILogger<KrakenWebSocket> logger = LogManager.CreateLogger<KrakenWebSocket>();
         private static readonly Encoding DEFAULT_ENCODING = Encoding.UTF8;
 
         private readonly ClientWebSocket webSocket;

@@ -69,6 +69,11 @@ namespace Kraken.WebSockets
         event EventHandler<KrakenDataEventArgs<BookUpdateMessage>> BookUpdateReceived;
 
         /// <summary>
+        /// Occurs when own trades information was received.
+        /// </summary>
+        event EventHandler<KrakenPrivateEventArgs<OwnTradesMessage>> OwnTradesReceived;
+
+        /// <summary>
         /// Connects to the websocket endpoint.
         /// </summary>
         /// <returns></returns>

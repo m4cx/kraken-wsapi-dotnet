@@ -3,24 +3,24 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Kraken.WebSockets.Logging
 {
-    internal static class LogManager
+    internal class LogManager
     {
-        /// <summary>
-        /// Gets or sets the logger factory.
-        /// </summary>
-        /// <value>
-        /// The logger factory.
-        /// </value>
-        internal static ILoggerFactory LoggerFactory { get; set; } = new NullLoggerFactory();
+        private static ILoggerFactory _factory;
 
-        /// <summary>
-        /// Gets the logger.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static ILogger<T> GetLogger<T>()
+
+        public static ILoggerFactory LoggerFactory
         {
-            return LoggerFactory.CreateLogger<T>();
+            get
+            {
+                if (_factory == null)
+                {
+                    _factory = new NullLoggerFactory();
+                }
+
+                return _factory;
+            }
+            set => _factory = value;
         }
+        public static ILogger<T> CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
     }
 }
