@@ -96,12 +96,10 @@ namespace Kraken.WebSockets
         /// </exception>
         internal KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
         {
-            logger.LogDebug("Creating a new client instance");
             this.socket = socket ?? throw new ArgumentNullException(nameof(socket));
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
             // Add watch for incoming messages 
-            logger.LogDebug("Applying incoming message handler");
             this.socket.DataReceived += HandleIncomingMessage;
         }
 
