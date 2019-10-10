@@ -19,7 +19,6 @@ namespace Kraken.WebSockets.Tests
 
         public KrakenApiClientTests()
         {
-            LogManager.LoggerFactory = new NullLoggerFactory();
             socket = new Mock<IKrakenSocket>();
             serializer = new Mock<IKrakenMessageSerializer>();
 

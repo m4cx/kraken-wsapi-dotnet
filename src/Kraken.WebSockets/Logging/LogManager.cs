@@ -5,22 +5,37 @@ namespace Kraken.WebSockets.Logging
 {
     internal class LogManager
     {
+        private static readonly object lockObject = new object();
         private static ILoggerFactory _factory;
-
 
         public static ILoggerFactory LoggerFactory
         {
             get
             {
-                if (_factory == null)
+                lock (lockObject)
                 {
-                    _factory = new NullLoggerFactory();
-                }
+                    if (_factory == null)
+                    {
+                        _factory = new NullLoggerFactory();
+                    }
 
-                return _factory;
+                    return _factory;
+                }
             }
-            set => _factory = value;
+            set
+            {
+                lock (lockObject)
+                {
+                    _factory = value;
+                }
+            }
         }
-        public static ILogger<T> CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
+        public static ILogger<T> CreateLogger<T>()
+        {
+            lock (lockObject)
+            {
+                return LoggerFactory.CreateLogger<T>();
+            }
+        }
     }
 }
