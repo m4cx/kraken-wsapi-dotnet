@@ -52,6 +52,12 @@ namespace Kraken.WebSockets.Messages
         /// </summary>
         public const string OwnTrades = "ownTrades";
 
+        /// <summary>
+        /// Open orders, initial snapshot will provide list of all open orders and then any updates to
+        /// the open orders list will be sent.
+        /// </summary>
+        public const string OpenOrders = "openOrders";
+
         internal static IEnumerable<string> AllowedNames
         {
             get
@@ -64,12 +70,17 @@ namespace Kraken.WebSockets.Messages
                 yield return Book;
                 yield return Spread;
                 yield return OwnTrades;
+                yield return OpenOrders;
             }
         }
 
         internal static IEnumerable<string> PrivateNames
         {
-            get { yield return OwnTrades; }
+            get
+            {
+                yield return OwnTrades;
+                yield return OpenOrders;
+            }
         }
     }
 }

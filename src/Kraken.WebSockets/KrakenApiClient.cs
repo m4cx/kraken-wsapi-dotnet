@@ -85,6 +85,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenPrivateEventArgs<OwnTradesMessage>> OwnTradesReceived;
 
         /// <summary>
+        /// Occurs when open orders information was received.
+        /// </summary>
+        public event EventHandler<KrakenPrivateEventArgs<OpenOrdersMessage>> OpenOrdersReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -227,6 +232,12 @@ namespace Kraken.WebSockets
                     {
                         var ownTrades = OwnTradesMessage.CreateFromString(eventArgs.RawContent);
                         OwnTradesReceived.InvokeAll(this, new KrakenPrivateEventArgs<OwnTradesMessage>(ownTrades));
+                    }
+
+                    if (eventArgs.RawContent.Contains(@"""openOrders"""))
+                    {
+                        var openOrders = OpenOrdersMessage.CreateFromString(eventArgs.RawContent);
+                        OpenOrdersReceived.InvokeAll(this, new KrakenPrivateEventArgs<OpenOrdersMessage>(openOrders));
                     }
 
                     break;
