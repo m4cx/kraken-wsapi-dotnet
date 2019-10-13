@@ -46,6 +46,7 @@ namespace Kraken.WebSockets.Sample
             client.BookSnapshotReceived += (sender, e) => Console.WriteLine($"BookSnapshot received");
             client.BookUpdateReceived += (sender, e) => Console.WriteLine($"BookUpdate received");
             client.OwnTradesReceived += (sender, e) => Console.WriteLine($"OwnTrades received");
+            client.OpenOrdersReceived += (sender, e) => Console.WriteLine($"OpenOrders received");
 
             await client.ConnectAsync();
 
@@ -60,6 +61,7 @@ namespace Kraken.WebSockets.Sample
 
             await client.SubscribeAsync(new Subscribe(new[] { Pair.XBT_EUR }, new SubscribeOptions(SubscribeOptionNames.All)));
             await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OwnTrades, "YXBpS2V5NDMyOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==")));
+            await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OpenOrders, "YXBpS2V5NDMyOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==")));
         }
     }
 }

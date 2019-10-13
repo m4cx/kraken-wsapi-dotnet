@@ -313,6 +313,21 @@ namespace Kraken.WebSockets.Tests
         }
 
         [Fact]
+        public void KrakenDataMessage_OpenOrdersIsReceivedAndPropagatedThroughEvent()
+        {
+            bool handlerExecuted = false;
+            instance.OpenOrdersReceived += (sender, args) =>
+            {
+                Assert.IsType<OpenOrdersMessage>(args.PrivateMessage);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs("private", TestSocketMessages.OpenOrdersMessage));
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
         public void KrakenDataMessage_UnknownDataNoEventIsEmitted()
         {
             bool handlerExecuted = false;
