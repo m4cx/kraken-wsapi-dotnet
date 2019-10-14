@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Kraken.WebSockets.Authentication;
 using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -14,6 +16,17 @@ namespace Kraken.WebSockets.Sample
 
         static void Main(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build();
+
+            var authenticationClient = new AuthenticationClient(
+                configuration.GetValue<string>("API_URL"),
+                configuration.GetValue<string>("API_KEY").ToSecureString(),
+                configuration.GetValue<string>("API_SECRET").ToSecureString());
+
+            var token = authenticationClient.GetWebsocketToken();
+
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.Console()
@@ -23,7 +36,7 @@ namespace Kraken.WebSockets.Sample
                 .AddKrakenWebSockets()
                 .AddSerilog(logger);
 
-            using (var client = KrakenApi.ClientFactory.Create("wss://ws-sandbox.kraken.com"))
+            using (var client = KrakenApi.ClientFactory.Create("wss://ws-auth.kraken.com"))
             {
                 Task.Run(() => RunKraken(client));
                 do
