@@ -13,8 +13,9 @@ namespace Kraken.WebSockets.Sample
     [ExcludeFromCodeCoverage]
     class Program
     {
+        private static AuthToken token;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
@@ -25,7 +26,7 @@ namespace Kraken.WebSockets.Sample
                 configuration.GetValue<string>("API_KEY").ToSecureString(),
                 configuration.GetValue<string>("API_SECRET").ToSecureString());
 
-            var token = authenticationClient.GetWebsocketToken();
+            token = await authenticationClient.GetWebsocketToken();
 
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -36,7 +37,7 @@ namespace Kraken.WebSockets.Sample
                 .AddKrakenWebSockets()
                 .AddSerilog(logger);
 
-            using (var client = KrakenApi.ClientFactory.Create("wss://ws-auth.kraken.com"))
+            using (var client = KrakenApi.ClientFactory.Create("wss://ws-sandbox.kraken.com"))
             {
                 Task.Run(() => RunKraken(client));
                 do
@@ -72,9 +73,9 @@ namespace Kraken.WebSockets.Sample
                 }
             };
 
-            await client.SubscribeAsync(new Subscribe(new[] { Pair.XBT_EUR }, new SubscribeOptions(SubscribeOptionNames.All)));
-            await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OwnTrades, "YXBpS2V5NDMyOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==")));
-            await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OpenOrders, "YXBpS2V5NDMyOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==")));
+            //await client.SubscribeAsync(new Subscribe(new[] { Pair.XBT_EUR }, new SubscribeOptions(SubscribeOptionNames.All)));
+            await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OwnTrades, token.Token)));
+            await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OpenOrders, token.Token)));
         }
     }
 }
