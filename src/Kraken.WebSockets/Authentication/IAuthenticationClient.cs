@@ -2,7 +2,7 @@
 
 namespace Kraken.WebSockets.Authentication
 {
-    internal interface IAuthenticationClient
+    public interface IAuthenticationClient
     {
         Task<AuthToken> GetWebsocketToken();
     }

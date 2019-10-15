@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Authentication;
 using Kraken.WebSockets.Logging;
@@ -18,15 +19,10 @@ namespace Kraken.WebSockets.Sample
         static async Task Main(string[] args)
         {
             var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true)
                 .AddEnvironmentVariables()
                 .Build();
-
-            var authenticationClient = new AuthenticationClient(
-                configuration.GetValue<string>("API_URL"),
-                configuration.GetValue<string>("API_KEY").ToSecureString(),
-                configuration.GetValue<string>("API_SECRET").ToSecureString());
-
-            token = await authenticationClient.GetWebsocketToken();
 
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -37,7 +33,16 @@ namespace Kraken.WebSockets.Sample
                 .AddKrakenWebSockets()
                 .AddSerilog(logger);
 
-            using (var client = KrakenApi.ClientFactory.Create("wss://ws-sandbox.kraken.com"))
+            var krakenApi = new KrakenApi()
+                .ConfigureAuthentication(
+                    configuration.GetValue<string>("API_URL"),
+                    configuration.GetValue<string>("API_KEY"),
+                     configuration.GetValue<string>("API_SECRET"))
+                .ConfigureWebsocket("wss://ws.kraken.com");
+
+            token = await krakenApi.AuthenticationClient.GetWebsocketToken();
+
+            using (var client = krakenApi.BuildClient())
             {
                 Task.Run(() => RunKraken(client));
                 do
