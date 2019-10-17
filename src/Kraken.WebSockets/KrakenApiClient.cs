@@ -192,19 +192,19 @@ namespace Kraken.WebSockets
 
         private void HandleIncomingMessage(object sender, KrakenMessageEventArgs eventArgs)
         {
-            logger.LogDebug("Handling incoming '{event}' message", eventArgs.Event);
+            logger.LogDebug("Handling incoming '{@event}' message", eventArgs.Event);
 
             switch (eventArgs.Event)
             {
                 case Heartbeat.EventName:
                     var heartbeat = serializer.Deserialize<Heartbeat>(eventArgs.RawContent);
-                    logger.LogTrace("Heartbeat received: {heartbeat}", heartbeat);
+                    logger.LogTrace("Heartbeat received: {@heartbeat}", heartbeat);
                     HeartbeatReceived.InvokeAll(this, heartbeat);
                     break;
 
                 case SystemStatus.EventName:
                     var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
-                    logger.LogTrace("System status changed: {systemStatus}", systemStatus);
+                    logger.LogTrace("System status changed: {@systemStatus}", systemStatus);
                     SystemStatus = systemStatus;
                     SystemStatusChanged.InvokeAll(this, systemStatus);
                     break;
@@ -213,7 +213,7 @@ namespace Kraken.WebSockets
                     try
                     {
                         var subscriptionStatus = serializer.Deserialize<SubscriptionStatus>(eventArgs.RawContent);
-                        logger.LogTrace("Subscription status changed: {subscriptionStatus}", subscriptionStatus);
+                        logger.LogTrace("Subscription status changed: {@subscriptionStatus}", subscriptionStatus);
 
                         SynchronizeSubscriptions(subscriptionStatus);
                         SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
@@ -328,7 +328,5 @@ namespace Kraken.WebSockets
         }
 
         #endregion
-
-        
     }
 }

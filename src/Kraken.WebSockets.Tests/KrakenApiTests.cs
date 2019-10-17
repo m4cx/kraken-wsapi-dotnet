@@ -13,7 +13,7 @@ namespace Kraken.WebSockets.Tests
         [Fact]
         public void ClientFactory_Get_ReturnsInstance()
         {
-            Assert.IsType<KrakenApiClientFactory>(KrakenApi.ClientFactory);
+            //Assert.IsType<KrakenApiClientFactory>(KrakenApiStatic.ClientFactory);
         }
 
         #endregion
