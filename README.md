@@ -19,6 +19,8 @@ Get the current version from NuGet Gallery using the Package Manager / .NET CLI
 
 ```bash
 PM> Install-Package Kraken.WebSockets # Package Manager
+```
+```bash
 > dotnet add package Kraken.WebSockets # .NET CLI
 ```
 
@@ -55,7 +57,7 @@ You can also find a running example in the repository.
 
 Starting with their version 0.3.0 of the Websocket API kraken.com provides access to sensitive private account information like trades and orders. In order to gain access you need to [authenticate](https://www.kraken.com/features/websocket-api#authentication).
 
-We support and easy and feasible way to retrieve a token and pass it to the subscription:
+We support an easy and feasible way to retrieve a token and pass it to the subscription:
 
 ```csharp
 
