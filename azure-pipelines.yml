@@ -24,6 +24,13 @@ jobs:
   # Restore NuGet Packages
   - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
     displayName: "Restore NuGet Packages"
+  - task: SonarCloudPrepare@1
+    inputs:
+      SonarCloud: 'SonarCloud M4cX'
+      organization: 'm4cx-github'
+      scannerMode: 'MSBuild'
+      projectKey: 'kraken-wsapi-dotnet'
+      projectName: 'kraken-wsapi-dotnet'
   # Build all projects with specific version number
   - script: 'dotnet build "src/Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(debugVersionNumber)'
     displayName: 'dotnet build'
@@ -47,6 +54,12 @@ jobs:
     inputs:
       pathtoPublish: "$(Build.ArtifactStagingDirectory)"
       artifactName: "drop"
+  - task: SonarCloudAnalyze@1
+
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
+
 
 # Release Build
 - job: "BuildRelease"
@@ -59,6 +72,13 @@ jobs:
   # Restore NuGet Packages
   - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
     displayName: "Restore NuGet Packages"
+  - task: SonarCloudPrepare@1
+    inputs:
+      SonarCloud: 'SonarCloud M4cX'
+      organization: 'm4cx-github'
+      scannerMode: 'MSBuild'
+      projectKey: 'kraken-wsapi-dotnet'
+      projectName: 'kraken-wsapi-dotnet'
   # Build all projects with specific version number
   - script: 'dotnet build "src/Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(versionNumber)'
     displayName: 'dotnet build'
@@ -82,4 +102,9 @@ jobs:
     inputs:
       pathtoPublish: "$(Build.ArtifactStagingDirectory)"
       artifactName: "drop"
+  - task: SonarCloudAnalyze@1
+
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
 
