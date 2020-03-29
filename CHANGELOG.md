@@ -1,5 +1,21 @@
-# [0.3.0](https://github.com/m4cx/kraken-wsapi-dotnet/releases/tag/0.3.0) (2019-07-28)
+# [0.4.0](https://github.com/m4cx/kraken-wsapi-dotnet/compare/0.3.0...0.4.0) (2020-03-29)
 
+### Bug Fixes
+
+* **logging:** use lock for multi threading ([749e1c7](https://github.com/m4cx/kraken-wsapi-dotnet/commit/749e1c7))
+* **subscription-status:** surpress error when subscribing without token ([c86daca](https://github.com/m4cx/kraken-wsapi-dotnet/commit/c86daca))
+
+
+### Features
+
+* **authentication:** request authentication token from rest api ([43c3d7d](https://github.com/m4cx/kraken-wsapi-dotnet/commit/43c3d7d)), closes [#41](https://github.com/m4cx/kraken-wsapi-dotnet/issues/41)
+* **open-orders:** handle open order messages from websocket ([7fcb607](https://github.com/m4cx/kraken-wsapi-dotnet/commit/7fcb607))
+* **own-trades:** deserializing data from socket ([416ead7](https://github.com/m4cx/kraken-wsapi-dotnet/commit/416ead7))
+* **private-message:** separate logic for private data from data ([2e47eb7](https://github.com/m4cx/kraken-wsapi-dotnet/commit/2e47eb7))
+* **subscription:** provide authentication token for private data ([34c658f](https://github.com/m4cx/kraken-wsapi-dotnet/commit/34c658f))
+
+
+# [0.3.0](https://github.com/m4cx/kraken-wsapi-dotnet/releases/tag/0.3.0) (2019-07-28)
 
 ### Bug Fixes
 

@@ -15,7 +15,7 @@ namespace Kraken.WebSockets
     /// </summary>
     internal sealed class KrakenApiClient : IKrakenApiClient
     {
-        private static readonly ILogger<KrakenApiClient> logger = LogManager.GetLogger<KrakenApiClient>();
+        private static readonly ILogger<KrakenApiClient> logger = LogManager.CreateLogger<KrakenApiClient>();
 
         private readonly IKrakenSocket socket;
         private readonly IKrakenMessageSerializer serializer;
@@ -80,6 +80,16 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenDataEventArgs<BookUpdateMessage>> BookUpdateReceived;
 
         /// <summary>
+        /// Occurs when own trades information was received.
+        /// </summary>
+        public event EventHandler<KrakenPrivateEventArgs<OwnTradesMessage>> OwnTradesReceived;
+
+        /// <summary>
+        /// Occurs when open orders information was received.
+        /// </summary>
+        public event EventHandler<KrakenPrivateEventArgs<OpenOrdersMessage>> OpenOrdersReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenApiClient" /> class.
         /// </summary>
         /// <param name="socket">Socket.</param>
@@ -91,12 +101,10 @@ namespace Kraken.WebSockets
         /// </exception>
         internal KrakenApiClient(IKrakenSocket socket, IKrakenMessageSerializer serializer)
         {
-            logger.LogDebug("Creating a new client instance");
             this.socket = socket ?? throw new ArgumentNullException(nameof(socket));
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
             // Add watch for incoming messages 
-            logger.LogDebug("Applying incoming message handler");
             this.socket.DataReceived += HandleIncomingMessage;
         }
 
@@ -184,29 +192,53 @@ namespace Kraken.WebSockets
 
         private void HandleIncomingMessage(object sender, KrakenMessageEventArgs eventArgs)
         {
-            logger.LogDebug("Handling incoming '{event}' message", eventArgs.Event);
+            logger.LogDebug("Handling incoming '{@event}' message", eventArgs.Event);
 
             switch (eventArgs.Event)
             {
                 case Heartbeat.EventName:
                     var heartbeat = serializer.Deserialize<Heartbeat>(eventArgs.RawContent);
-                    logger.LogTrace("Heartbeat received: {heartbeat}", heartbeat);
+                    logger.LogTrace("Heartbeat received: {@heartbeat}", heartbeat);
                     HeartbeatReceived.InvokeAll(this, heartbeat);
                     break;
 
                 case SystemStatus.EventName:
                     var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
-                    logger.LogTrace("System status changed: {systemStatus}", systemStatus);
+                    logger.LogTrace("System status changed: {@systemStatus}", systemStatus);
                     SystemStatus = systemStatus;
                     SystemStatusChanged.InvokeAll(this, systemStatus);
                     break;
 
                 case SubscriptionStatus.EventName:
-                    var subscriptionStatus = serializer.Deserialize<SubscriptionStatus>(eventArgs.RawContent);
-                    logger.LogTrace("Subscription status changed: {subscriptionStatus}", subscriptionStatus);
+                    try
+                    {
+                        var subscriptionStatus = serializer.Deserialize<SubscriptionStatus>(eventArgs.RawContent);
+                        logger.LogTrace("Subscription status changed: {@subscriptionStatus}", subscriptionStatus);
 
-                    SynchronizeSubscriptions(subscriptionStatus);
-                    SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
+                        SynchronizeSubscriptions(subscriptionStatus);
+                        SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Failed to deserialize subscription status: {message}", eventArgs.RawContent);
+                    }
+
+                    break;
+
+                case "private":
+
+                    // handle private content
+                    if (eventArgs.RawContent.Contains(@"""ownTrades"""))
+                    {
+                        var ownTrades = OwnTradesMessage.CreateFromString(eventArgs.RawContent);
+                        OwnTradesReceived.InvokeAll(this, new KrakenPrivateEventArgs<OwnTradesMessage>(ownTrades));
+                    }
+
+                    if (eventArgs.RawContent.Contains(@"""openOrders"""))
+                    {
+                        var openOrders = OpenOrdersMessage.CreateFromString(eventArgs.RawContent);
+                        OpenOrdersReceived.InvokeAll(this, new KrakenPrivateEventArgs<OpenOrdersMessage>(openOrders));
+                    }
 
                     break;
 

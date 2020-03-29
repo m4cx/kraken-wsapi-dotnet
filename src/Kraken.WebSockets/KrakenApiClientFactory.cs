@@ -1,5 +1,5 @@
-﻿using Kraken.WebSockets.Messages;
-using System;
+﻿using System;
+using Kraken.WebSockets.Messages;
 
 namespace Kraken.WebSockets
 {

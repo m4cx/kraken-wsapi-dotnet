@@ -17,6 +17,16 @@ namespace Kraken.WebSockets.Tests.Logging
             Assert.IsAssignableFrom<ILoggerFactory>(LogManager.LoggerFactory);
         }
 
+        [Fact]
+        public void LoggerFactory_Get_ForceNullToReturnNullLoggerFactory()
+        {
+            LogManager.LoggerFactory = null;
+            var factory = LogManager.LoggerFactory;
+
+            Assert.NotNull(factory);
+            Assert.IsType<NullLoggerFactory>(factory);
+        }
+
         #endregion
 
         #region GetLogger()
@@ -24,7 +34,9 @@ namespace Kraken.WebSockets.Tests.Logging
         [Fact]
         public void GetLogger_ReturnsLoggerAsDefault()
         {
-            Assert.IsAssignableFrom<ILogger<object>>(LogManager.GetLogger<object>());
+            var testLogger = LogManager.CreateLogger<LogManagerTests>();
+            Assert.NotNull(testLogger);
+            Assert.IsAssignableFrom<ILogger<object>>(testLogger);
         }
 
         #endregion

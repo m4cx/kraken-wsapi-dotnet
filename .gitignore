@@ -9,3 +9,7 @@ coverage.json
 build/
 node_modules/
 TestResults/
+*.DotSettings
+
+src/Kraken.WebSockets.Sample/Properties/launchSettings.json
+.vscode/

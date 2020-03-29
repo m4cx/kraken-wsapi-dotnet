@@ -2,7 +2,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
+using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 
@@ -17,8 +19,11 @@ namespace Kraken.WebSockets.Tests
 
         public KrakenApiClientTests()
         {
+            LogManager.LoggerFactory = new NullLoggerFactory();
+
             socket = new Mock<IKrakenSocket>();
             serializer = new Mock<IKrakenMessageSerializer>();
+
             instance = new KrakenApiClient(socket.Object, serializer.Object);
         }
 
@@ -289,6 +294,36 @@ namespace Kraken.WebSockets.Tests
 
             socket.Raise(x => x.DataReceived += null,
                 new KrakenMessageEventArgs("heartbeat", @"{""event"":""heartbeat""}"));
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
+        public void KrakenDataMessage_OwnTradesIsReceivedAndPropagatedThroughEvent()
+        {
+            bool handlerExecuted = false;
+            instance.OwnTradesReceived += (sender, args) =>
+            {
+                Assert.IsType<OwnTradesMessage>(args.PrivateMessage);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs("private", TestSocketMessages.OwnTradesMessage));
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
+        public void KrakenDataMessage_OpenOrdersIsReceivedAndPropagatedThroughEvent()
+        {
+            bool handlerExecuted = false;
+            instance.OpenOrdersReceived += (sender, args) =>
+            {
+                Assert.IsType<OpenOrdersMessage>(args.PrivateMessage);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs("private", TestSocketMessages.OpenOrdersMessage));
             Assert.True(handlerExecuted);
         }
 

@@ -1,6 +1,6 @@
 variables:
     major: 0
-    minor: 3
+    minor: 4
     patch: 0
     versionNumber: $(major).$(minor).$(patch)
     debugVersionNumber: $(versionNumber)-b$(Build.BuildId)  
@@ -33,7 +33,7 @@ jobs:
     inputs:
       command: test
       projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
-      arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:../../codecoverage.runsettings'
+      arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:./codecoverage.runsettings'
   # Create NuGet Package
   - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(debugVersionNumber)
     displayName: "Create NuGet Package"
@@ -47,25 +47,6 @@ jobs:
     inputs:
       pathtoPublish: "$(Build.ArtifactStagingDirectory)"
       artifactName: "drop"
-# - job: "DeployPreRelease"
-#   displayName: "Deploy Pre-Release"
-#   condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-#   dependsOn: "BuildPreRelease"
-#   steps:
-#   # Download artifacts
-#   - task: DownloadBuildArtifacts@0
-#     displayName: "Download files"
-#     inputs:
-#       artifactName: "drop"
-#       downloadPath: $(System.DefaultWorkingDirectory)
-#   # Publish NuGet Package
-#   - task: NuGetCommand@2
-#     displayName: "Publish Pre-Release to NuGet Gallery"
-#     inputs:
-#       command: push
-#       nuGetFeedType: external
-#       publishFeedCredentials: 'Official NuGet'
-#       packagesToPush: '$(System.DefaultWorkingDirectory)/**/*.nupkg;!$(System.DefaultWorkingDirectory)/**/*.symbols.nupkg'
 
 # Release Build
 - job: "BuildRelease"
@@ -87,7 +68,7 @@ jobs:
     inputs:
       command: test
       projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
-      arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:../../codecoverage.runsettings'
+      arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:./codecoverage.runsettings'
   # Create NuGet Package
   - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
     displayName: "Create NuGet Package"
@@ -101,22 +82,4 @@ jobs:
     inputs:
       pathtoPublish: "$(Build.ArtifactStagingDirectory)"
       artifactName: "drop"
-# - job: "DeployRelease"
-#   displayName: "Deploy Release"
-#   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
-#   dependsOn: "BuildRelease"
-#   steps:
-#   # Download artifacts
-#   - task: DownloadBuildArtifacts@0
-#     displayName: "Download files"
-#     inputs:
-#       artifactName: "drop"
-#       downloadPath: $(System.DefaultWorkingDirectory)
-#   # Publish NuGet Package
-#   - task: NuGetCommand@2
-#     displayName: "Publish Release to NuGet Gallery"
-#     inputs:
-#       command: push
-#       nuGetFeedType: external
-#       publishFeedCredentials: 'Official NuGet'
-#       packagesToPush: '$(System.DefaultWorkingDirectory)/**/*.nupkg;!$(System.DefaultWorkingDirectory)/**/*.symbols.nupkg'
+

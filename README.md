@@ -19,6 +19,8 @@ Get the current version from NuGet Gallery using the Package Manager / .NET CLI
 
 ```bash
 PM> Install-Package Kraken.WebSockets # Package Manager
+```
+```bash
 > dotnet add package Kraken.WebSockets # .NET CLI
 ```
 
@@ -29,7 +31,10 @@ For detailed information on the installing of pre-release versions please refer 
 Creating a connection is pretty easy but will also be improved in the future. But for now just do it like this:
 
 ```csharp
-using (var client = KrakenApi.ClientFactory.Create("wss://ws-beta.kraken.com"))
+var krakenApi = new KrakenApi()
+    .ConfigureWebsocket("wss://ws.kraken.com");
+
+using (var client = krakenApi.BuildClient())
 {
     client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed");
     client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed"); ;
@@ -48,6 +53,30 @@ using (var client = KrakenApi.ClientFactory.Create("wss://ws-beta.kraken.com"))
 
 You can also find a running example in the repository.
 
+## Subscribe to private events
+
+Starting with their version 0.3.0 of the Websocket API kraken.com provides access to sensitive private account information like trades and orders. In order to gain access you need to [authenticate](https://www.kraken.com/features/websocket-api#authentication).
+
+We support an easy and feasible way to retrieve a token and pass it to the subscription:
+
+```csharp
+
+// Configure the API provider
+var krakenApi = new KrakenApi()
+    .ConfigureWebsocket("wss://ws.kraken.com")
+    .ConfigureAuthentication(
+        configuration.GetValue<string>("API_URL"),
+        configuration.GetValue<string>("API_KEY"),
+        configuration.GetValue<string>("API_SECRET"));
+
+// retrieve the token
+var token = await krakenApi.AuthenticationClient.GetWebsocketToken();
+
+// Pass the token to a private subscription
+await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OwnTrades, token.Token)));
+
+```
+
 ## Attach your logging framework
 
 With the `Microsoft.Extensions.Logging.Abstractions` in place you are not limited to a specific logging framework. Each logging framework which supports this abstraction layer can be attached to this library. Just to name a few of them:
@@ -57,7 +86,7 @@ With the `Microsoft.Extensions.Logging.Abstractions` in place you are not limite
 - NLog
 - ... and many more
 
-To enable the logging just call the provided extension method on your ```ILoggerFactory``` of your application.
+To enable the logging just call the provided extension method on your `ILoggerFactory` of your application.
 
 ```csharp
 // Using the logging from ASP.NET Core MVC
