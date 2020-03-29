@@ -12,3 +12,4 @@ TestResults/
 *.DotSettings
 
 src/Kraken.WebSockets.Sample/Properties/launchSettings.json
+.vscode/
