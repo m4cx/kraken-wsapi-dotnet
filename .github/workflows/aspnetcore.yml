@@ -1,0 +1,42 @@
+name: kraken-wsapi-dotnet-ci
+
+on: 
+  push:
+    branches:
+    - '*'
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: "Read package version"
+      id: package-version
+      uses: tyankatsu0105/read-package-version-actions@v1
+    
+    - name: 'Setup .NET CLI Tools'
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.201
+      
+    - name: Build with dotnet
+      run: dotnet build "src/Kraken.WebSockets.sln" --configuration Release
+    
+    - name: Test
+      run: dotnet test "src/Kraken.WebSockets.sln" --configuration Release --no-build --no-restore
+    
+    - name: NuGet Pack
+      run: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build -p:Version=${{ format('{0}-{1}', steps.package-version.outputs.version, github.sha) }} --output $GITHUB_WORKSPACE/publish
+      shell: bash
+    
+    - name: upload
+      uses: actions/upload-artifact@master
+      with:
+        name: artifacts
+        path: ./publish
+    
