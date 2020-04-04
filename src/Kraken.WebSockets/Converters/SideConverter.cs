@@ -13,7 +13,7 @@ namespace Kraken.WebSockets.Converters
             {
                 "buy" => Side.Buy,
                 "sell" => Side.Sell,
-                _ => throw new ArgumentOutOfRangeException(nameof(reader.Value)),
+                _ => throw new InvalidOperationException($"Value '{reader.Value}' cannot be converted to type '{nameof(Side)}'"),
             };
         }
 

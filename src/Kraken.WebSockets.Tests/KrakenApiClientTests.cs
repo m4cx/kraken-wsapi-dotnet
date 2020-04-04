@@ -149,6 +149,26 @@ namespace Kraken.WebSockets.Tests
 
         #endregion
 
+        #region AddOrder()
+
+        [Fact]
+        public async Task AddOrder_NoCommand_ThrowsArgumentNullException()
+        {
+            Assert.Equal("addOrderCommand", 
+                (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AddOrder(null))).ParamName);
+        }
+
+        [Fact]
+        public async Task AddOrder_Command_CommandIsSentToSocket()
+        {
+            var addOrder = new AddOrderCommand("token", OrderType.Market, Side.Sell, Pair.XBT_EUR, 1);
+
+            await instance.AddOrder(addOrder);
+            socket.Verify(x => x.SendAsync(It.Is<AddOrderCommand>(y => y == addOrder)));
+        }
+
+        #endregion
+
         #region KrakenDataMessageHandling
 
         [Fact]
@@ -283,7 +303,7 @@ namespace Kraken.WebSockets.Tests
         }
 
         [Fact]
-        public void KrakenDataMessage_HeartbeatIsReceivedAndPropagatedThroughEvent()
+        public void KrakenMessage_Heartbeat_IsReceivedAndPropagatedThroughEvent()
         {
             serializer
                 .Setup(x => x.Deserialize<Heartbeat>(It.Is<string>(y => y == TestSocketMessages.Heartbeat)))
@@ -298,6 +318,26 @@ namespace Kraken.WebSockets.Tests
 
             socket.Raise(x => x.DataReceived += null,
                 new KrakenMessageEventArgs("heartbeat", TestSocketMessages.Heartbeat));
+
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
+        public void KrakenMessage_AddOrderStatus_IsReceivedAndPropagatedThroughEvent()
+        {
+            serializer
+                .Setup(x => x.Deserialize<AddOrderStatusEvent>(It.Is<string>(y => y == TestSocketMessages.AddOrderStatus)))
+                .Returns(new KrakenMessageSerializer().Deserialize<AddOrderStatusEvent>(TestSocketMessages.AddOrderStatus));
+
+            bool handlerExecuted = false;
+            instance.AddOrderStatusReceived += (sender, e) =>
+            {
+                Assert.IsType<AddOrderStatusEvent>(e.Message);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs(AddOrderStatusEvent.EventName, TestSocketMessages.AddOrderStatus));
 
             Assert.True(handlerExecuted);
         }

@@ -10,7 +10,7 @@ namespace Kraken.WebSockets.Converters
     internal sealed class StatusConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
-            => objectType == typeof(Status);
+            => objectType == typeof(Status) || objectType == typeof(Status?);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -18,7 +18,7 @@ namespace Kraken.WebSockets.Converters
             {
                 "ok" => Status.Ok,
                 "error" => Status.Error,
-                _ => throw new ArgumentOutOfRangeException(nameof(reader.Value)),
+                _ => throw new InvalidOperationException($"Value '{reader.Value}' cannot be converted to type '{nameof(Status)}'"),
             };
         }
 

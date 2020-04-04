@@ -138,7 +138,7 @@ namespace Kraken.WebSockets
                 throw new ArgumentNullException(nameof(subscribe));
             }
 
-            logger.LogDebug("Adding subscription: {subscribe}", subscribe);
+            logger.LogTrace("Adding subscription: {subscribe}", subscribe);
             await socket.SendAsync(subscribe);
         }
 
@@ -155,25 +155,30 @@ namespace Kraken.WebSockets
                 throw new ArgumentOutOfRangeException(nameof(channelId));
             }
 
-            logger.LogDebug("Unsubscribe from subscription with channelId '{channelId}'", channelId);
+            logger.LogTrace("Unsubscribe from subscription with channelId '{channelId}'", channelId);
             await socket.SendAsync(new Unsubscribe(channelId));
         }
 
         /// <summary>
         /// Adds the order.
         /// </summary>
-        /// <param name="addOrderMessage">The add order message.</param>
+        /// <param name="addOrderCommand">The add order message.</param>
         /// <exception cref="ArgumentNullException">addOrderMessage</exception>
-        public async Task AddOrder(AddOrderCommand addOrderMessage)
+        public Task AddOrder(AddOrderCommand addOrderCommand)
         {
-            if (addOrderMessage == null)
+            if (addOrderCommand == null)
             {
-                logger.LogError("No add order message provided");
-                throw new ArgumentNullException(nameof(addOrderMessage));
+                logger.LogError("No add order command provided");
+                throw new ArgumentNullException(nameof(addOrderCommand));
             }
 
-            logger.LogDebug("Adding new order:{@addOrderMessasge}", addOrderMessage);
-            await socket.SendAsync(addOrderMessage);
+            return AddOrderInternal(addOrderCommand);
+        }
+
+        private async Task AddOrderInternal(AddOrderCommand addOrderCommand)
+        {
+            logger.LogTrace("Adding new order:{@addOrderCommand}", addOrderCommand);
+            await socket.SendAsync(addOrderCommand);
         }
 
         #region IDisposable Support

@@ -10,7 +10,7 @@ namespace Kraken.WebSockets.Converters
             => objectType == typeof(decimal) || objectType == typeof(decimal?);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            => Convert.ToDecimal(reader.Value);
+            => throw new NotImplementedException();
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             => writer.WriteValue(((decimal)value).ToString(CultureInfo.InvariantCulture));

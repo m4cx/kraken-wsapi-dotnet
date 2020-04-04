@@ -101,8 +101,8 @@ namespace Kraken.WebSockets
         /// <summary>
         /// Adds the order.
         /// </summary>
-        /// <param name="addOrderMessage">The add order message.</param>
+        /// <param name="addOrderCommand">The add order message.</param>
         /// <returns></returns>
-        Task AddOrder(AddOrderCommand addOrderMessage);
+        Task AddOrder(AddOrderCommand addOrderCommand);
     }
 }
