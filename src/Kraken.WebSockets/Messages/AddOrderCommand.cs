@@ -8,16 +8,16 @@ namespace Kraken.WebSockets.Messages
     /// Request. Add new order.
     /// </summary>
     /// <seealso cref="PrivateKrakenMessage" />
-    public sealed class AddOrderMessage : PrivateKrakenMessage
+    public sealed class AddOrderCommand : PrivateKrakenMessage
     {
         public const string EventName = "addOrder";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddOrderMessage"/> class.
+        /// Initializes a new instance of the <see cref="AddOrderCommand"/> class.
         /// </summary>
         /// <param name="eventType">Type of the event.</param>
         /// <param name="token">The token.</param>
-        public AddOrderMessage(string token, OrderType orderType, Side type, string pair, decimal volume)
+        public AddOrderCommand(string token, OrderType orderType, Side type, string pair, decimal volume)
             : base(EventName, token)
         {
             OrderType = orderType;
@@ -185,7 +185,7 @@ namespace Kraken.WebSockets.Messages
         /// </value>
         [JsonProperty("close[ordertype]")]
         [JsonConverter(typeof(OrderTypeConverter))]
-        public OrderType CloseOrderType { get; set; }
+        public OrderType? CloseOrderType { get; set; }
 
         /// <summary>
         /// Gets or sets the close price.

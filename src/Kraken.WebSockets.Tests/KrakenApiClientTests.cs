@@ -285,15 +285,20 @@ namespace Kraken.WebSockets.Tests
         [Fact]
         public void KrakenDataMessage_HeartbeatIsReceivedAndPropagatedThroughEvent()
         {
+            serializer
+                .Setup(x => x.Deserialize<Heartbeat>(It.Is<string>(y => y == TestSocketMessages.Heartbeat)))
+                .Returns(new Heartbeat());
+
             bool handlerExecuted = false;
             instance.HeartbeatReceived += (sender, e) =>
             {
-                Assert.Null(e.Message);
+                Assert.IsType<Heartbeat>(e.Message);
                 handlerExecuted = true;
             };
 
             socket.Raise(x => x.DataReceived += null,
-                new KrakenMessageEventArgs("heartbeat", @"{""event"":""heartbeat""}"));
+                new KrakenMessageEventArgs("heartbeat", TestSocketMessages.Heartbeat));
+
             Assert.True(handlerExecuted);
         }
 

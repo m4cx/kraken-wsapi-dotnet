@@ -23,7 +23,14 @@ namespace Kraken.WebSockets.Converters
             };
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
-            => writer.WriteValue(Enum.GetName(typeof(OrderType), value).ToLower());
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            if (value == null)
+            {
+                return;
+            }
+
+            writer.WriteValue(Enum.GetName(typeof(OrderType), value).ToLower());
+        }
     }
 }

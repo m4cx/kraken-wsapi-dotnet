@@ -50,6 +50,11 @@ namespace Kraken.WebSockets
         public event EventHandler<KrakenMessageEventArgs<SubscriptionStatus>> SubscriptionStatusChanged;
 
         /// <summary>
+        /// Occurs when add order status received.
+        /// </summary>
+        public event EventHandler<KrakenMessageEventArgs<AddOrderStatusEvent>> AddOrderStatusReceived;
+
+        /// <summary>
         /// Occurs when a new ticker information was received.
         /// </summary>
         public event EventHandler<KrakenDataEventArgs<TickerMessage>> TickerReceived;
@@ -118,7 +123,7 @@ namespace Kraken.WebSockets
             logger.LogDebug("Connect to the websocket");
             await socket.ConnectAsync();
         }
-        
+
         /// <summary>
         /// Creates a subscription.
         /// </summary>
@@ -159,7 +164,7 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <param name="addOrderMessage">The add order message.</param>
         /// <exception cref="ArgumentNullException">addOrderMessage</exception>
-        public async Task AddOrder(AddOrderMessage addOrderMessage)
+        public async Task AddOrder(AddOrderCommand addOrderMessage)
         {
             if (addOrderMessage == null)
             {
@@ -182,7 +187,7 @@ namespace Kraken.WebSockets
                     // TODO: Unsubscribe from all active subscriptions
                     if (Subscriptions.Any())
                     {
-                        foreach(var subscription in Subscriptions.Keys)
+                        foreach (var subscription in Subscriptions.Keys)
                         {
                             UnsubscribeAsync(subscription).GetAwaiter().GetResult();
                         }
@@ -214,32 +219,19 @@ namespace Kraken.WebSockets
             switch (eventArgs.Event)
             {
                 case Heartbeat.EventName:
-                    var heartbeat = serializer.Deserialize<Heartbeat>(eventArgs.RawContent);
-                    logger.LogTrace("Heartbeat received: {@heartbeat}", heartbeat);
-                    HeartbeatReceived.InvokeAll(this, heartbeat);
+                    HandleEvent(eventArgs, HeartbeatReceived);
                     break;
 
                 case SystemStatus.EventName:
-                    var systemStatus = serializer.Deserialize<SystemStatus>(eventArgs.RawContent);
-                    logger.LogTrace("System status changed: {@systemStatus}", systemStatus);
-                    SystemStatus = systemStatus;
-                    SystemStatusChanged.InvokeAll(this, systemStatus);
+                    SystemStatus = HandleEvent(eventArgs, SystemStatusChanged);
                     break;
 
                 case SubscriptionStatus.EventName:
-                    try
-                    {
-                        var subscriptionStatus = serializer.Deserialize<SubscriptionStatus>(eventArgs.RawContent);
-                        logger.LogTrace("Subscription status changed: {@subscriptionStatus}", subscriptionStatus);
+                    SynchronizeSubscriptions(HandleEvent(eventArgs, SubscriptionStatusChanged));
+                    break;
 
-                        SynchronizeSubscriptions(subscriptionStatus);
-                        SubscriptionStatusChanged.InvokeAll(this, subscriptionStatus);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogWarning(ex, "Failed to deserialize subscription status: {message}", eventArgs.RawContent);
-                    }
-
+                case AddOrderStatusEvent.EventName:
+                    HandleEvent(eventArgs, AddOrderStatusReceived);
                     break;
 
                 case "private":
@@ -309,6 +301,24 @@ namespace Kraken.WebSockets
                 default:
                     logger.LogWarning("Could not handle incoming message: {message}", eventArgs.RawContent);
                     break;
+            }
+        }
+
+        private TEvent HandleEvent<TEvent>(KrakenMessageEventArgs eventArgs, EventHandler<KrakenMessageEventArgs<TEvent>> eventHandler)
+            where TEvent : KrakenMessage, new()
+        {
+            try
+            {
+                var eventObject = serializer.Deserialize<TEvent>(eventArgs.RawContent);
+                logger.LogTrace("Event '{eventType}' received: {@event}", eventObject.GetType().Name, eventObject);
+
+                eventHandler.InvokeAll(this, eventObject);
+                return eventObject;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to deserialize addOrderStatus: {message}", eventArgs.RawContent);
+                return null;
             }
         }
 

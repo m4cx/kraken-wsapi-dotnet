@@ -38,10 +38,10 @@ namespace Kraken.WebSockets.Tests.Messages
         [Fact]
         public void Serialize_AddOrderMessage()
         {
-            var addOrder = new AddOrderMessage("0000000000000000000000000000000000000000", OrderType.Limit, Side.Buy, "XBT/USD", 10)
+            var addOrder = new AddOrderCommand("0000000000000000000000000000000000000000", OrderType.Limit, Side.Buy, "XBT/USD", 10)
             {
                 RequestId = 123,
-                
+
                 Price = 123.5M,
                 Price2 = 125M,
                 Leverage = 123.456M,
@@ -117,8 +117,48 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Equal(TestSocketMessages.SubscriptionStatus1.Status, result.Status);
             Assert.Equal(TestSocketMessages.SubscriptionStatus1.Pair, result.Pair);
             Assert.Equal(TestSocketMessages.SubscriptionStatus1.ChannelId, result.ChannelId);
-
         }
+
+        #region Heartbeat
+
+        [Fact]
+        public void Deserialize_Heartbeat_ReturnsExpectedObjectStructure()
+        {
+            var result = instance.Deserialize<Heartbeat>(TestSocketMessages.Heartbeat);
+            Assert.IsType<Heartbeat>(result);
+        }
+
+        #endregion
+
+        #region AddOrderStatus
+
+        [Fact]
+        public void Deserialize_AddOrderStatusSuccess_ReturnsObject()
+        {
+            var result = instance.Deserialize<AddOrderStatusEvent>(TestSocketMessages.AddOrderStatus);
+
+            Assert.Equal("buy 0.01770000 XBTUSD @ limit 4000", result.Description);
+            Assert.Equal("addOrderStatus", result.Event);
+            Assert.Equal(Status.Ok, result.Status);
+            Assert.Equal("ONPNXH-KMKMU-F4MR5V", result.OrderId);
+            Assert.Null(result.ErrorMessage);
+            Assert.Null(result.RequestId);
+        }
+
+        [Fact]
+        public void Deserialize_AddOrderStatusError_ReturnsObject()
+        {
+            var result = instance.Deserialize<AddOrderStatusEvent>(TestSocketMessages.AddOrderStatusError);
+
+            Assert.Equal("addOrderStatus", result.Event);
+            Assert.Equal(Status.Error, result.Status);
+            Assert.Equal("EOrder:Order minimum not met", result.ErrorMessage);
+            Assert.Null(result.Description);
+            Assert.Null(result.OrderId);
+            Assert.Null(result.RequestId);
+        }
+
+        #endregion
 
         #endregion
     }

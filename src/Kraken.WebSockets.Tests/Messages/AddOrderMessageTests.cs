@@ -29,13 +29,13 @@ namespace Kraken.WebSockets.Tests.Messages
         [Fact]
         public void Ctor_TokenNull_ThrowsArgumentNullExcetion()
         {
-            Assert.Equal("token", Assert.Throws<ArgumentNullException>(() => new AddOrderMessage(null, orderType, side, pair, volume)).ParamName);
+            Assert.Equal("token", Assert.Throws<ArgumentNullException>(() => new AddOrderCommand(null, orderType, side, pair, volume)).ParamName);
         }
 
         [Fact]
         public void Ctor_PairNull_ThrowsArgumentNullExcetion()
         {
-            Assert.Equal("pair", Assert.Throws<ArgumentNullException>(() => new AddOrderMessage(token, orderType, side, null, volume)).ParamName);
+            Assert.Equal("pair", Assert.Throws<ArgumentNullException>(() => new AddOrderCommand(token, orderType, side, null, volume)).ParamName);
         }
 
         #endregion
