@@ -26,7 +26,8 @@ namespace Kraken.WebSockets.Sample
 
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console()
+                .WriteTo.RollingFile("logs/kraken-websockets.log")
+                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
                 .CreateLogger();
 
             new LoggerFactory()
@@ -38,13 +39,13 @@ namespace Kraken.WebSockets.Sample
                     configuration.GetValue<string>("API_URL"),
                     configuration.GetValue<string>("API_KEY"),
                      configuration.GetValue<string>("API_SECRET"))
-                .ConfigureWebsocket("wss://ws.kraken.com");
+                .ConfigureWebsocket(configuration.GetValue<string>("WS_ENDPOINT"));
 
             token = await krakenApi.AuthenticationClient.GetWebsocketToken();
 
             using (var client = krakenApi.BuildClient())
             {
-                Task.Run(() => RunKraken(client));
+                await Task.Run(() => RunKraken(client, token));
                 do
                 {
                     Console.WriteLine("Press [ESC] to exit.");
@@ -53,7 +54,7 @@ namespace Kraken.WebSockets.Sample
             }
         }
 
-        private static async Task RunKraken(IKrakenApiClient client)
+        private static async Task RunKraken(IKrakenApiClient client, AuthToken token)
         {
             client.HeartbeatReceived += (sender, e) => Console.WriteLine("Heartbeat received");
             client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed: status={e.Message.Status}");
@@ -81,6 +82,11 @@ namespace Kraken.WebSockets.Sample
             await client.SubscribeAsync(new Subscribe(new[] { Pair.XBT_EUR }, new SubscribeOptions(SubscribeOptionNames.All)));
             await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OwnTrades, token.Token)));
             await client.SubscribeAsync(new Subscribe(null, new SubscribeOptions(SubscribeOptionNames.OpenOrders, token.Token)));
+
+            await client.AddOrder(new AddOrderCommand(token.Token, OrderType.Market, Side.Sell, "XBT/USD", 1)
+            {
+                TradingAgreement = "agree"
+            });
         }
     }
 }
