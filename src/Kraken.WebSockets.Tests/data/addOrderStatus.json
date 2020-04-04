@@ -1,0 +1,6 @@
+{
+  "descr": "buy 0.01770000 XBTUSD @ limit 4000",
+  "event": "addOrderStatus",
+  "status": "ok",
+  "txid": "ONPNXH-KMKMU-F4MR5V"
+}

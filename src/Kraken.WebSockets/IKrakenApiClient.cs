@@ -97,5 +97,12 @@ namespace Kraken.WebSockets
         /// <param name="channelId">The channel identifier.</param>
         /// <returns></returns>
         Task UnsubscribeAsync(int channelId);
+
+        /// <summary>
+        /// Adds the order.
+        /// </summary>
+        /// <param name="addOrderMessage">The add order message.</param>
+        /// <returns></returns>
+        Task AddOrder(AddOrderMessage addOrderMessage);
     }
 }

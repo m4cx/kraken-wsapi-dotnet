@@ -1,0 +1,11 @@
+{
+  "close[ordertype]": "limit",
+  "close[price]": "9100",
+  "event": "addOrder",
+  "ordertype": "limit",
+  "pair": "XBT/USD",
+  "price": "9000",
+  "token": "0000000000000000000000000000000000000000",
+  "type": "buy",
+  "volume": "10"
+}

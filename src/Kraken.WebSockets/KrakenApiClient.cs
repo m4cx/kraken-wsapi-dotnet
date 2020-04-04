@@ -118,7 +118,7 @@ namespace Kraken.WebSockets
             logger.LogDebug("Connect to the websocket");
             await socket.ConnectAsync();
         }
-
+        
         /// <summary>
         /// Creates a subscription.
         /// </summary>
@@ -152,6 +152,23 @@ namespace Kraken.WebSockets
 
             logger.LogDebug("Unsubscribe from subscription with channelId '{channelId}'", channelId);
             await socket.SendAsync(new Unsubscribe(channelId));
+        }
+
+        /// <summary>
+        /// Adds the order.
+        /// </summary>
+        /// <param name="addOrderMessage">The add order message.</param>
+        /// <exception cref="ArgumentNullException">addOrderMessage</exception>
+        public async Task AddOrder(AddOrderMessage addOrderMessage)
+        {
+            if (addOrderMessage == null)
+            {
+                logger.LogError("No add order message provided");
+                throw new ArgumentNullException(nameof(addOrderMessage));
+            }
+
+            logger.LogDebug("Adding new order:{@addOrderMessasge}", addOrderMessage);
+            await socket.SendAsync(addOrderMessage);
         }
 
         #region IDisposable Support

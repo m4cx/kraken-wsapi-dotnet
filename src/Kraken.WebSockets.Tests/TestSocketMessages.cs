@@ -175,5 +175,12 @@ namespace Kraken.WebSockets.Tests
         public static string OpenOrdersMessage => File.ReadAllText("data/openOrders.json");
 
         #endregion
+
+        #region AddOrder
+
+        public static string AddOrder => File.ReadAllText("data/addOrder.json");
+        public static string AddOrderConditionalClose => File.ReadAllText("data/addOrderConditionalClose.json");
+
+        #endregion
     }
 }
