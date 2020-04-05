@@ -23,6 +23,6 @@ namespace Kraken.WebSockets.Converters
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            => writer.WriteValue(Enum.GetName(typeof(Status), value).ToLower());
+            => throw new NotImplementedException();
     }
 }

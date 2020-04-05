@@ -31,5 +31,36 @@ namespace Kraken.WebSockets.Tests.Converters
         }
 
         #endregion
+
+        #region WriteJson()
+
+        [Theory]
+        [InlineData(Status.Ok, null)]
+        [InlineData(Status.Error, null)]
+        [InlineData(Status.Ok, Status.Ok)]
+        [InlineData(Status.Ok, Status.Error)]
+        public void WriteJson_ThrowsNotImplementedException(Status property, Status? nullableProperty)
+        {
+            Assert.Throws<NotImplementedException>(() => JsonConvert.SerializeObject(new TestClass
+            {
+                Property = property,
+                NullableProperty = nullableProperty
+            }));
+        }
+
+        #endregion
+
+        #region TestClass
+
+        private class TestClass
+        {
+            [JsonConverter(typeof(StatusConverter))]
+            public Status Property { get; set; }
+
+            [JsonConverter(typeof(StatusConverter))]
+            public Status? NullableProperty { get; set; }
+        }
+
+        #endregion
     }
 }
