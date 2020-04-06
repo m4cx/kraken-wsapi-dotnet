@@ -25,13 +25,81 @@ namespace Kraken.WebSockets.Tests.Messages
         }
 
         [Fact]
-        public void Serialize_PingMessage_ReturnsPingMessageJson() => 
+        public void Serialize_PingMessage_ReturnsPingMessageJson() =>
             Assert.Equal(TestSocketMessages.PingMessage, instance.Serialize(TestSocketMessages.Ping));
 
         [Fact]
-        public void Serialize_SubsribeMessage_ReturnsSubscribeJsonWithoutNullvalues() => 
-            Assert.Equal(@"{""pair"":[""XBT/EUR""],""subscription"":{""name"":""*""},""event"":""subscribe""}", 
+        public void Serialize_SubsribeMessage_ReturnsSubscribeJsonWithoutNullvalues() =>
+            Assert.Equal(@"{""pair"":[""XBT/EUR""],""subscription"":{""name"":""*""},""event"":""subscribe""}",
                 instance.Serialize(new Subscribe(new string[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All))));
+
+        #region AddOrderMessage
+
+        [Fact]
+        public void Serialize_AddOrderMessage()
+        {
+            var addOrder = new AddOrderCommand("0000000000000000000000000000000000000000", OrderType.Limit, Side.Buy, "XBT/USD", 10)
+            {
+                RequestId = 123,
+
+                Price = 123.5M,
+                Price2 = 125M,
+                Leverage = 123.456M,
+                Oflags = "viqc,fcib",
+                Starttm = "+100",
+                Expiretm = "+150",
+                Userref = "123456",
+                Validate = "true",
+                CloseOrderType = OrderType.Market,
+                ClosePrice = 123.5M,
+                ClosePrice2 = 125M,
+                TradingAgreement = "agree"
+            };
+
+            var addOrderString = instance.Serialize(addOrder);
+
+            Assert.Contains(@"""event"":""addOrder""", addOrderString);
+            Assert.Contains(@"""token"":""0000000000000000000000000000000000000000""", addOrderString);
+            Assert.Contains(@"""reqid"":123", addOrderString);
+            Assert.Contains(@"""ordertype"":""limit""", addOrderString);
+            Assert.Contains(@"""type"":""buy""", addOrderString);
+            Assert.Contains(@"""pair"":""XBT/USD""", addOrderString);
+            Assert.Contains(@"""price"":""123.5""", addOrderString);
+            Assert.Contains(@"""price2"":""125""", addOrderString);
+            Assert.Contains(@"""volume"":""10""", addOrderString);
+            Assert.Contains(@"""leverage"":""123.456""", addOrderString);
+            Assert.Contains(@"""oflags"":""viqc,fcib""", addOrderString);
+            Assert.Contains(@"""starttm"":""+100""", addOrderString);
+            Assert.Contains(@"""expiretm"":""+150""", addOrderString);
+            Assert.Contains(@"""userref"":""123456""", addOrderString);
+            Assert.Contains(@"""validate"":""true""", addOrderString);
+            Assert.Contains(@"""close[ordertype]"":""market""", addOrderString);
+            Assert.Contains(@"""close[price]"":""123.5""", addOrderString);
+            Assert.Contains(@"""close[price2]"":""125""", addOrderString);
+            Assert.Contains(@"""trading_agreement"":""agree""", addOrderString);
+        }
+
+        #endregion
+
+        #region CancelOrderCommand
+
+        [Fact]
+        public void Serialize_CancelOrderCommand()
+        {
+            var cancelOrder = new CancelOrderCommand("0000000000000000000000000000000000000000", new[] { "ID1" })
+            {
+                RequestId = 123,
+            };
+
+            var cancelOrderJson = instance.Serialize(cancelOrder);
+
+            Assert.Contains(@"""event"":""cancelOrder""", cancelOrderJson);
+            Assert.Contains(@"""token"":""0000000000000000000000000000000000000000""", cancelOrderJson);
+            Assert.Contains(@"""reqid"":123", cancelOrderJson);
+            Assert.Contains(@"""txid"":[""ID1""]", cancelOrderJson);
+        }
+
+        #endregion
 
         #endregion
 
@@ -43,14 +111,14 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Equal("json",
                 Assert.Throws<ArgumentNullException>(() => instance.Deserialize<KrakenMessage>(null)).ParamName);
         }
-        
+
         [Fact]
         public void Deserialize_StringEmpty_ThrowsArgumentNullException()
         {
             Assert.Equal("json",
                 Assert.Throws<ArgumentNullException>(() => instance.Deserialize<KrakenMessage>(string.Empty)).ParamName);
         }
-        
+
         [Fact]
         public void Deserialize_SystemStatusMessage_ReturnsSystemStatus()
         {
@@ -69,8 +137,74 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Equal(TestSocketMessages.SubscriptionStatus1.Status, result.Status);
             Assert.Equal(TestSocketMessages.SubscriptionStatus1.Pair, result.Pair);
             Assert.Equal(TestSocketMessages.SubscriptionStatus1.ChannelId, result.ChannelId);
-
         }
+
+        #region Heartbeat
+
+        [Fact]
+        public void Deserialize_Heartbeat_ReturnsExpectedObjectStructure()
+        {
+            var result = instance.Deserialize<Heartbeat>(TestSocketMessages.Heartbeat);
+            Assert.IsType<Heartbeat>(result);
+        }
+
+        #endregion
+
+        #region AddOrderStatus
+
+        [Fact]
+        public void Deserialize_AddOrderStatusSuccess_ReturnsObject()
+        {
+            var result = instance.Deserialize<AddOrderStatusEvent>(TestSocketMessages.AddOrderStatus);
+
+            Assert.Equal("buy 0.01770000 XBTUSD @ limit 4000", result.Description);
+            Assert.Equal("addOrderStatus", result.Event);
+            Assert.Equal(Status.Ok, result.Status);
+            Assert.Equal("ONPNXH-KMKMU-F4MR5V", result.OrderId);
+            Assert.Null(result.ErrorMessage);
+            Assert.Null(result.RequestId);
+        }
+
+        [Fact]
+        public void Deserialize_AddOrderStatusError_ReturnsObject()
+        {
+            var result = instance.Deserialize<AddOrderStatusEvent>(TestSocketMessages.AddOrderStatusError);
+
+            Assert.Equal("addOrderStatus", result.Event);
+            Assert.Equal(Status.Error, result.Status);
+            Assert.Equal("EOrder:Order minimum not met", result.ErrorMessage);
+            Assert.Null(result.Description);
+            Assert.Null(result.OrderId);
+            Assert.Null(result.RequestId);
+        }
+
+        #endregion
+
+        #region CancelOrderStatus
+
+        [Fact]
+        public void Deserialize_CancelOrderStatusSuccess_ReturnsObject()
+        {
+            var result = instance.Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatus);
+
+            Assert.Equal(CancelOrderStatusEvent.EventName, result.Event);
+            Assert.Equal(Status.Ok, result.Status);
+            Assert.Null(result.ErrorMessage);
+            Assert.Null(result.RequestId);
+        }
+
+        [Fact]
+        public void Deserialize_CancelOrderStatusError_ReturnsObject()
+        {
+            var result = instance.Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatusError);
+
+            Assert.Equal(CancelOrderStatusEvent.EventName, result.Event);
+            Assert.Equal(Status.Error, result.Status);
+            Assert.Equal("EOrder:Unknown order", result.ErrorMessage);
+            Assert.Null(result.RequestId);
+        }
+
+        #endregion
 
         #endregion
     }

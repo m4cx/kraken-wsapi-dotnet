@@ -1,6 +1,6 @@
 {
   "name": "kraken-wsapi-dotnet",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "C# / .NET Standard Client for connecting to the public kraken.com WebSocket API",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/m4cx/kraken-wsapi-dotnet.git"
   },
-  "author": "Maik <macgyverx83@gmail.com>",
+  "author": "m4cx <macgyverx83@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/m4cx/kraken-wsapi-dotnet/issues"
@@ -29,7 +29,7 @@
     "commitlint-azure-pipelines-cli": "^1.0.2",
     "husky": "^1.3.1",
     "install": "^0.12.2",
-    "npm": "^6.13.4",
+    "npm": "^6.14.4",
     "standard-changelog": "^2.0.11"
   }
 }

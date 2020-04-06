@@ -16,6 +16,12 @@ namespace Kraken.WebSockets.Tests
 
         #endregion
 
+        #region Heartbeat
+
+        public static string Heartbeat => File.ReadAllText("data/heartbeat.json");
+
+        #endregion
+
         #region SystemStatus
 
         public const string SystemStatusMessage =
@@ -23,7 +29,6 @@ namespace Kraken.WebSockets.Tests
 
         public static readonly SystemStatus SystemStatus = new SystemStatus
         {
-            Event = "systemStatus",
             Status = "online",
             ConnectionId = 8628615390848610222,
             Version = "1.0.0"
@@ -173,6 +178,27 @@ namespace Kraken.WebSockets.Tests
         #region OpenOrders
 
         public static string OpenOrdersMessage => File.ReadAllText("data/openOrders.json");
+
+        #endregion
+
+        #region AddOrder
+
+        public static string AddOrder => File.ReadAllText("data/addOrder.json");
+        public static string AddOrderConditionalClose => File.ReadAllText("data/addOrderConditionalClose.json");
+
+        #endregion
+
+        #region AddOrderStatus
+
+        public static string AddOrderStatus => File.ReadAllText("data/addOrderStatus.json");
+        public static string AddOrderStatusError => File.ReadAllText("data/addOrderStatusError.json");
+
+        #endregion
+
+        #region CancelOrderStatus
+
+        public static string CancelOrderStatus => File.ReadAllText("data/cancelOrderStatus.json");
+        public static string CancelOrderStatusError => File.ReadAllText("data/cancelOrderStatusError.json");
 
         #endregion
     }
