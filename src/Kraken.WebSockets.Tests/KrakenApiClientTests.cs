@@ -363,6 +363,26 @@ namespace Kraken.WebSockets.Tests
         }
 
         [Fact]
+        public void KrakenMessage_CancelOrderStatus_IsReceivedAndPropagatedThroughEvent()
+        {
+            serializer
+                .Setup(x => x.Deserialize<CancelOrderStatusEvent>(It.Is<string>(y => y == TestSocketMessages.CancelOrderStatus)))
+                .Returns(new KrakenMessageSerializer().Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatus));
+
+            bool handlerExecuted = false;
+            instance.CancelOrderStatusReceived += (sender, e) =>
+            {
+                Assert.IsType<CancelOrderStatusEvent>(e.Message);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs(CancelOrderStatusEvent.EventName, TestSocketMessages.CancelOrderStatus));
+
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
         public void KrakenDataMessage_OwnTradesIsReceivedAndPropagatedThroughEvent()
         {
             bool handlerExecuted = false;

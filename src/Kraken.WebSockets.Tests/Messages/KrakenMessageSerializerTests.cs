@@ -180,6 +180,32 @@ namespace Kraken.WebSockets.Tests.Messages
 
         #endregion
 
+        #region CancelOrderStatus
+
+        [Fact]
+        public void Deserialize_CancelOrderStatusSuccess_ReturnsObject()
+        {
+            var result = instance.Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatus);
+
+            Assert.Equal(CancelOrderStatusEvent.EventName, result.Event);
+            Assert.Equal(Status.Ok, result.Status);
+            Assert.Null(result.ErrorMessage);
+            Assert.Null(result.RequestId);
+        }
+
+        [Fact]
+        public void Deserialize_CancelOrderStatusError_ReturnsObject()
+        {
+            var result = instance.Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatusError);
+
+            Assert.Equal(CancelOrderStatusEvent.EventName, result.Event);
+            Assert.Equal(Status.Error, result.Status);
+            Assert.Equal("EOrder:Unknown order", result.ErrorMessage);
+            Assert.Null(result.RequestId);
+        }
+
+        #endregion
+
         #endregion
     }
 }

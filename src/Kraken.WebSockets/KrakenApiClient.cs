@@ -33,6 +33,7 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <value>The subscriptions.</value>
         public IDictionary<int, SubscriptionStatus> Subscriptions { get; } = new Dictionary<int, SubscriptionStatus>();
+        
 
         /// <summary>
         /// Occurs when system status changed.
@@ -53,6 +54,11 @@ namespace Kraken.WebSockets
         /// Occurs when add order status received.
         /// </summary>
         public event EventHandler<KrakenMessageEventArgs<AddOrderStatusEvent>> AddOrderStatusReceived;
+
+        /// <summary>
+        /// The cancel order status received
+        /// </summary>
+        public EventHandler<KrakenMessageEventArgs<CancelOrderStatusEvent>> CancelOrderStatusReceived;
 
         /// <summary>
         /// Occurs when a new ticker information was received.
@@ -260,6 +266,10 @@ namespace Kraken.WebSockets
 
                 case AddOrderStatusEvent.EventName:
                     HandleEvent(eventArgs, AddOrderStatusReceived);
+                    break;
+
+                case CancelOrderStatusEvent.EventName:
+                    HandleEvent(eventArgs, CancelOrderStatusReceived);
                     break;
 
                 case "private":
