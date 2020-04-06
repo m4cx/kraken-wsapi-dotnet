@@ -1,3 +1,14 @@
+# [0.5.0](https://github.com/m4cx/kraken-wsapi-dotnet/compare/0.4.0...0.5.0) (2020-04-06)
+
+### Features
+
+* **add-order:** send addOrder message through websocket ([8ab6241](https://github.com/m4cx/kraken-wsapi-dotnet/commit/8ab6241))
+* **add-order-status:** handle and publish addOrderStatus event ([166eed2](https://github.com/m4cx/kraken-wsapi-dotnet/commit/166eed2))
+* **cancel-order-status:** handle and publish response event ([c6c3630](https://github.com/m4cx/kraken-wsapi-dotnet/commit/c6c3630))
+* **cancel-order:** send cancel order command via websocket ([f774962](https://github.com/m4cx/kraken-wsapi-dotnet/commit/f774962))
+* **open-orders:** handle open order messages from websocket ([7fcb607](https://github.com/m4cx/kraken-wsapi-dotnet/commit/7fcb607))
+
+
 # [0.4.0](https://github.com/m4cx/kraken-wsapi-dotnet/compare/0.3.0...0.4.0) (2020-03-29)
 
 ### Bug Fixes
