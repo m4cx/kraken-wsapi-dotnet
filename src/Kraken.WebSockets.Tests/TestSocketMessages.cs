@@ -194,5 +194,12 @@ namespace Kraken.WebSockets.Tests
         public static string AddOrderStatusError => File.ReadAllText("data/addOrderStatusError.json");
 
         #endregion
+
+        #region CancelOrderStatus
+
+        public static string CancelOrderStatus => File.ReadAllText("data/cancelOrderStatus.json");
+        public static string CancelOrderStatusError => File.ReadAllText("data/cancelOrderStatusError.json");
+
+        #endregion
     }
 }

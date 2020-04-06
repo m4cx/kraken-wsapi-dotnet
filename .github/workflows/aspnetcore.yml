@@ -36,7 +36,7 @@ jobs:
 # --------------------------------------
       - name: Build pre-release with dotnet
         if: github.ref != 'refs/heads/master'
-        run: dotnet build "src/Kraken.WebSockets.sln" --configuration Release -p:Version=${{ format('{0}-{1}', steps.package-version.outputs.version, steps.vars.outputs.sha_short) }}
+        run: dotnet build "src/Kraken.WebSockets.sln" --configuration Release -p:Version=${{ format('{0}-#{1}', steps.package-version.outputs.version, steps.vars.outputs.sha_short) }}
 
       - name: Test
         run: dotnet test "src/Kraken.WebSockets.sln" --configuration Release --no-build --no-restore
@@ -47,7 +47,7 @@ jobs:
         shell: bash
         env:
           SHA8: ${GITHUB_SHA::8}
-        run: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build -p:Version=${{ format('{0}-{1}', steps.package-version.outputs.version, steps.vars.outputs.sha_short) }} --output $GITHUB_WORKSPACE/publish
+        run: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build -p:Version=${{ format('{0}-#{1}', steps.package-version.outputs.version, steps.vars.outputs.sha_short) }} --output $GITHUB_WORKSPACE/publish
 
       - name: NuGet Push pre-release
         id: nuget-push

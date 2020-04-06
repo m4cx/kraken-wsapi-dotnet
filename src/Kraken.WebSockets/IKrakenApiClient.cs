@@ -104,5 +104,13 @@ namespace Kraken.WebSockets
         /// <param name="addOrderCommand">The add order message.</param>
         /// <returns></returns>
         Task AddOrder(AddOrderCommand addOrderCommand);
+
+        /// <summary>
+        /// Cancels the order.
+        /// </summary>
+        /// <param name="cancelOrder">The cancel order.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">cancelOrder</exception>
+        Task CancelOrder(CancelOrderCommand cancelOrder);
     }
 }

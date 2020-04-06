@@ -81,6 +81,26 @@ namespace Kraken.WebSockets.Tests.Messages
 
         #endregion
 
+        #region CancelOrderCommand
+
+        [Fact]
+        public void Serialize_CancelOrderCommand()
+        {
+            var cancelOrder = new CancelOrderCommand("0000000000000000000000000000000000000000", new[] { "ID1" })
+            {
+                RequestId = 123,
+            };
+
+            var cancelOrderJson = instance.Serialize(cancelOrder);
+
+            Assert.Contains(@"""event"":""cancelOrder""", cancelOrderJson);
+            Assert.Contains(@"""token"":""0000000000000000000000000000000000000000""", cancelOrderJson);
+            Assert.Contains(@"""reqid"":123", cancelOrderJson);
+            Assert.Contains(@"""txid"":[""ID1""]", cancelOrderJson);
+        }
+
+        #endregion
+
         #endregion
 
         #region Deserialize()
@@ -155,6 +175,32 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Equal("EOrder:Order minimum not met", result.ErrorMessage);
             Assert.Null(result.Description);
             Assert.Null(result.OrderId);
+            Assert.Null(result.RequestId);
+        }
+
+        #endregion
+
+        #region CancelOrderStatus
+
+        [Fact]
+        public void Deserialize_CancelOrderStatusSuccess_ReturnsObject()
+        {
+            var result = instance.Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatus);
+
+            Assert.Equal(CancelOrderStatusEvent.EventName, result.Event);
+            Assert.Equal(Status.Ok, result.Status);
+            Assert.Null(result.ErrorMessage);
+            Assert.Null(result.RequestId);
+        }
+
+        [Fact]
+        public void Deserialize_CancelOrderStatusError_ReturnsObject()
+        {
+            var result = instance.Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatusError);
+
+            Assert.Equal(CancelOrderStatusEvent.EventName, result.Event);
+            Assert.Equal(Status.Error, result.Status);
+            Assert.Equal("EOrder:Unknown order", result.ErrorMessage);
             Assert.Null(result.RequestId);
         }
 

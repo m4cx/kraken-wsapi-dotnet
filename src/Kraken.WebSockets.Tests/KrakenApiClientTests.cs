@@ -154,7 +154,7 @@ namespace Kraken.WebSockets.Tests
         [Fact]
         public async Task AddOrder_NoCommand_ThrowsArgumentNullException()
         {
-            Assert.Equal("addOrderCommand", 
+            Assert.Equal("addOrderCommand",
                 (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AddOrder(null))).ParamName);
         }
 
@@ -165,6 +165,26 @@ namespace Kraken.WebSockets.Tests
 
             await instance.AddOrder(addOrder);
             socket.Verify(x => x.SendAsync(It.Is<AddOrderCommand>(y => y == addOrder)));
+        }
+
+        #endregion
+
+        #region CancelOrder() 
+
+        [Fact]
+        public async Task CancelOrder_NoCommand_ThrowsArgumentNullException()
+        {
+            Assert.Equal("cancelOrder",
+                (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CancelOrder(null))).ParamName);
+        }
+
+        [Fact]
+        public async Task CancelOrder_Command_CommandIsSentToSocket()
+        {
+            var cancelOrder = new CancelOrderCommand("token", new[] { "ID1" });
+
+            await instance.CancelOrder(cancelOrder);
+            socket.Verify(x => x.SendAsync(It.Is<CancelOrderCommand>(y => y == cancelOrder)));
         }
 
         #endregion
@@ -338,6 +358,26 @@ namespace Kraken.WebSockets.Tests
 
             socket.Raise(x => x.DataReceived += null,
                 new KrakenMessageEventArgs(AddOrderStatusEvent.EventName, TestSocketMessages.AddOrderStatus));
+
+            Assert.True(handlerExecuted);
+        }
+
+        [Fact]
+        public void KrakenMessage_CancelOrderStatus_IsReceivedAndPropagatedThroughEvent()
+        {
+            serializer
+                .Setup(x => x.Deserialize<CancelOrderStatusEvent>(It.Is<string>(y => y == TestSocketMessages.CancelOrderStatus)))
+                .Returns(new KrakenMessageSerializer().Deserialize<CancelOrderStatusEvent>(TestSocketMessages.CancelOrderStatus));
+
+            bool handlerExecuted = false;
+            instance.CancelOrderStatusReceived += (sender, e) =>
+            {
+                Assert.IsType<CancelOrderStatusEvent>(e.Message);
+                handlerExecuted = true;
+            };
+
+            socket.Raise(x => x.DataReceived += null,
+                new KrakenMessageEventArgs(CancelOrderStatusEvent.EventName, TestSocketMessages.CancelOrderStatus));
 
             Assert.True(handlerExecuted);
         }

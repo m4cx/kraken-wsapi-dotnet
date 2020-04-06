@@ -33,6 +33,7 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <value>The subscriptions.</value>
         public IDictionary<int, SubscriptionStatus> Subscriptions { get; } = new Dictionary<int, SubscriptionStatus>();
+        
 
         /// <summary>
         /// Occurs when system status changed.
@@ -53,6 +54,11 @@ namespace Kraken.WebSockets
         /// Occurs when add order status received.
         /// </summary>
         public event EventHandler<KrakenMessageEventArgs<AddOrderStatusEvent>> AddOrderStatusReceived;
+
+        /// <summary>
+        /// The cancel order status received
+        /// </summary>
+        public EventHandler<KrakenMessageEventArgs<CancelOrderStatusEvent>> CancelOrderStatusReceived;
 
         /// <summary>
         /// Occurs when a new ticker information was received.
@@ -181,6 +187,29 @@ namespace Kraken.WebSockets
             await socket.SendAsync(addOrderCommand);
         }
 
+        /// <summary>
+        /// Cancels the order.
+        /// </summary>
+        /// <param name="cancelOrder">The cancel order.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">cancelOrder</exception>
+        public Task CancelOrder(CancelOrderCommand cancelOrder)
+        {
+            if (cancelOrder == null)
+            {
+                logger.LogError("No cancelOrder command provided");
+                throw new ArgumentNullException(nameof(cancelOrder));
+            }
+
+            return CancelOrderInternal(cancelOrder);
+        }
+
+        private async Task CancelOrderInternal(CancelOrderCommand cancelOrder)
+        {
+            logger.LogTrace("Cancelling existing order: {@cancelOrder}", cancelOrder);
+            await socket.SendAsync(cancelOrder);
+        }
+
         #region IDisposable Support
 
         private void Dispose(bool disposing)
@@ -237,6 +266,10 @@ namespace Kraken.WebSockets
 
                 case AddOrderStatusEvent.EventName:
                     HandleEvent(eventArgs, AddOrderStatusReceived);
+                    break;
+
+                case CancelOrderStatusEvent.EventName:
+                    HandleEvent(eventArgs, CancelOrderStatusReceived);
                     break;
 
                 case "private":
