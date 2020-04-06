@@ -1,12 +1,12 @@
 ﻿using Kraken.WebSockets.Converters;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace Kraken.WebSockets.Tests.Converters
 {
+    [ExcludeFromCodeCoverage]
     public class SideConverterTests
     {
         private readonly SideConverter instance;
