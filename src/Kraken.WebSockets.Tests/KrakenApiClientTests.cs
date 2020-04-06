@@ -154,7 +154,7 @@ namespace Kraken.WebSockets.Tests
         [Fact]
         public async Task AddOrder_NoCommand_ThrowsArgumentNullException()
         {
-            Assert.Equal("addOrderCommand", 
+            Assert.Equal("addOrderCommand",
                 (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AddOrder(null))).ParamName);
         }
 
@@ -165,6 +165,26 @@ namespace Kraken.WebSockets.Tests
 
             await instance.AddOrder(addOrder);
             socket.Verify(x => x.SendAsync(It.Is<AddOrderCommand>(y => y == addOrder)));
+        }
+
+        #endregion
+
+        #region CancelOrder() 
+
+        [Fact]
+        public async Task CancelOrder_NoCommand_ThrowsArgumentNullException()
+        {
+            Assert.Equal("cancelOrder",
+                (await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CancelOrder(null))).ParamName);
+        }
+
+        [Fact]
+        public async Task CancelOrder_Command_CommandIsSentToSocket()
+        {
+            var cancelOrder = new CancelOrderCommand("token", new[] { "ID1" });
+
+            await instance.CancelOrder(cancelOrder);
+            socket.Verify(x => x.SendAsync(It.Is<CancelOrderCommand>(y => y == cancelOrder)));
         }
 
         #endregion

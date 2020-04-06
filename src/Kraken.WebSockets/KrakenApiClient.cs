@@ -181,6 +181,29 @@ namespace Kraken.WebSockets
             await socket.SendAsync(addOrderCommand);
         }
 
+        /// <summary>
+        /// Cancels the order.
+        /// </summary>
+        /// <param name="cancelOrder">The cancel order.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">cancelOrder</exception>
+        public Task CancelOrder(CancelOrderCommand cancelOrder)
+        {
+            if (cancelOrder == null)
+            {
+                logger.LogError("No cancelOrder command provided");
+                throw new ArgumentNullException(nameof(cancelOrder));
+            }
+
+            return CancelOrderInternal(cancelOrder);
+        }
+
+        private async Task CancelOrderInternal(CancelOrderCommand cancelOrder)
+        {
+            logger.LogTrace("Cancelling existing order: {@cancelOrder}", cancelOrder);
+            await socket.SendAsync(cancelOrder);
+        }
+
         #region IDisposable Support
 
         private void Dispose(bool disposing)

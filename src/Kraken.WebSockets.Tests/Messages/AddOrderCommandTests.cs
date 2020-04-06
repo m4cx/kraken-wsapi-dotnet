@@ -1,5 +1,4 @@
 ﻿using Kraken.WebSockets.Messages;
-using Newtonsoft.Json;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
@@ -7,7 +6,7 @@ using Xunit;
 namespace Kraken.WebSockets.Tests.Messages
 {
     [ExcludeFromCodeCoverage]
-    public class AddOrderMessageTests 
+    public class AddOrderCommandTests 
     {
         private readonly string token;
         private readonly OrderType orderType;
@@ -15,7 +14,7 @@ namespace Kraken.WebSockets.Tests.Messages
         private readonly string pair;
         private readonly decimal volume;
 
-        public AddOrderMessageTests()
+        public AddOrderCommandTests()
         {
             token = "token";
             orderType = OrderType.Limit;
