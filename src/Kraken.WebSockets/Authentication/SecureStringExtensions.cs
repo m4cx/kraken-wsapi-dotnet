@@ -8,7 +8,9 @@ namespace Kraken.WebSockets.Authentication
     {
         public static string ToPlainString(this SecureString secureString)
         {
+#pragma warning disable S1854 // Unused assignments should be removed
             IntPtr unmanagedString = IntPtr.Zero;
+#pragma warning restore S1854 // Unused assignments should be removed
             try
             {
                 unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(secureString);

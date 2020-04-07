@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Kraken.WebSockets.Messages
 {
@@ -51,8 +49,8 @@ namespace Kraken.WebSockets.Messages
         {
             var bookUpdateMessage = KrakenDataMessageHelper.EnsureRawMessage(rawBookUpdateMessage);
 
-            var asks = bookUpdateMessage.Skip(1).OfType<JObject>().Where(x => x.ContainsKey("a")).FirstOrDefault();
-            var bids = bookUpdateMessage.Skip(1).OfType<JObject>().Where(x => x.ContainsKey("b")).FirstOrDefault();
+            var asks = bookUpdateMessage.Skip(1).OfType<JObject>().FirstOrDefault(x => x.ContainsKey("a"));
+            var bids = bookUpdateMessage.Skip(1).OfType<JObject>().FirstOrDefault(x => x.ContainsKey("b"));
 
             return new BookUpdateMessage
             {

@@ -46,7 +46,7 @@ namespace Kraken.WebSockets.Messages
         public Subscribe(IEnumerable<string> pairs, SubscribeOptions options, int? requestId = null)
             : base(SubscribeMessageKey)
         {
-            Pairs = pairs; // ?? throw new ArgumentNullException(nameof(pairs));
+            Pairs = pairs;
             Options = options ?? throw new ArgumentNullException(nameof(options));
             RequestId = requestId;
         }

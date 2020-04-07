@@ -6,7 +6,7 @@ namespace Kraken.WebSockets.Messages
 {
     public class KrakenMessageSerializer : IKrakenMessageSerializer
     {
-        private JsonSerializerSettings serializerSettings;
+        private readonly JsonSerializerSettings serializerSettings;
 
         public KrakenMessageSerializer()
         {
