@@ -7,7 +7,7 @@ namespace Kraken.WebSockets.Messages
     /// </summary>
     public class Ping : KrakenMessage
     {
-        private const string EventType = "ping";
+        private const string EventName = "ping";
 
         /// <summary>
         /// Gets the request identifier.
@@ -19,19 +19,7 @@ namespace Kraken.WebSockets.Messages
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.Messages.Ping"/> class.
         /// </summary>
-        public Ping()
-            : this(null)
-        {
-        }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.Messages.Ping"/> class.
-        /// </summary>
-        /// <param name="requestId">Request identifier.</param>
-        public Ping(int? requestId = null) 
-            : base(EventType)
-        {
-            RequestId = requestId;
-        }
+        public Ping() : base(EventName)
+        { }
     }
 }

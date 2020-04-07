@@ -1,5 +1,4 @@
-﻿using System;
-namespace Kraken.WebSockets.Messages
+﻿namespace Kraken.WebSockets.Messages
 {
     public interface IKrakenMessageSerializer
     {

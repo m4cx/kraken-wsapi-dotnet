@@ -12,7 +12,7 @@ using Serilog;
 namespace Kraken.WebSockets.Sample
 {
     [ExcludeFromCodeCoverage]
-    class Program
+    static class Program
     {
         private static AuthToken token;
 
@@ -58,7 +58,7 @@ namespace Kraken.WebSockets.Sample
         {
             client.HeartbeatReceived += (sender, e) => Console.WriteLine("Heartbeat received");
             client.SystemStatusChanged += (sender, e) => Console.WriteLine($"System status changed: status={e.Message.Status}");
-            client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}"); ;
+            client.SubscriptionStatusChanged += (sender, e) => Console.WriteLine($"Subscription status changed: status={e.Message.Status}, pair={e.Message.Pair}, channelId={e.Message.ChannelId}, error={e.Message.ErrorMessage}, subscription.name={e.Message.Subscription.Name}");
             client.TickerReceived += (sender, e) => Console.WriteLine($"Ticker received");
             client.OhlcReceived += (sender, e) => Console.WriteLine($"Ohlc received");
             client.TradeReceived += (sender, e) => Console.WriteLine($"Trade received");

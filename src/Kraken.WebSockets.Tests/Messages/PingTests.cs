@@ -35,15 +35,6 @@ namespace Kraken.WebSockets.Tests.Messages
             Assert.Null(new Ping().RequestId);
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        [InlineData(-1)]
-        public void RequestId_ShouldReturnValueFromCtor(int requestId)
-        {
-            Assert.Equal(requestId, new Ping(requestId).RequestId);
-        }
-
         #endregion
     }
 }

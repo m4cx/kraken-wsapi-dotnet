@@ -6,7 +6,7 @@ namespace Kraken.WebSockets
     /// <summary>
     /// Factory responsible for creating <see cref="IKrakenApiClient"/> instances
     /// </summary>
-    /// <seealso cref="Kraken.WebSockets.IKrakenApiClientFactory" />
+    /// <seealso cref="IKrakenApiClientFactory" />
     internal class KrakenApiClientFactory : IKrakenApiClientFactory
     {
         private readonly IKrakenMessageSerializer serializer;
