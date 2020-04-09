@@ -1,5 +1,4 @@
-﻿using System.Security;
-using Kraken.WebSockets.Authentication;
+﻿using Kraken.WebSockets.Authentication;
 
 namespace Kraken.WebSockets
 {

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net.WebSockets;
 using Kraken.WebSockets.Messages;
+using Kraken.WebSockets.Sockets;
 
 namespace Kraken.WebSockets
 {
@@ -33,7 +35,7 @@ namespace Kraken.WebSockets
                 throw new ArgumentOutOfRangeException(nameof(uri));
             }
 
-            var socket = new KrakenWebSocket(uri, serializer);
+            var socket = new KrakenWebSocket(uri, serializer, new DefaultWebSocket(new ClientWebSocket()));
             return new KrakenApiClient(socket, serializer);
         }
     }

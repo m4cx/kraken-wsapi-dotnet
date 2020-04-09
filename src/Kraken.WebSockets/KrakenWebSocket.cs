@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Logging;
 using Kraken.WebSockets.Messages;
+using Kraken.WebSockets.Sockets;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +20,8 @@ namespace Kraken.WebSockets
         private static readonly ILogger<KrakenWebSocket> logger = LogManager.CreateLogger<KrakenWebSocket>();
         private static readonly Encoding DEFAULT_ENCODING = Encoding.UTF8;
 
-        private readonly ClientWebSocket webSocket;
+
+        private readonly IWebSocket webSocket;
         private readonly string uri;
         private readonly IKrakenMessageSerializer serializer;
 
@@ -37,11 +39,11 @@ namespace Kraken.WebSockets
         /// Initializes a new instance of the <see cref="T:Kraken.WebSockets.KrakenWebsocket"/> class.
         /// </summary>
         /// <param name="uri">URI.</param>
-        public KrakenWebSocket(string uri, IKrakenMessageSerializer serializer)
+        public KrakenWebSocket(string uri, IKrakenMessageSerializer serializer, IWebSocket webSocket)
         {
             this.uri = uri ?? throw new ArgumentNullException(nameof(uri));
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-            webSocket = new ClientWebSocket();
+            this.webSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
         }
 
         /// <summary>
@@ -166,7 +168,6 @@ namespace Kraken.WebSockets
         private async Task<string> ReadNextMessage()
         {
             var buffer = new byte[1024];
-
             var messageParts = new StringBuilder();
 
             WebSocketReceiveResult result;
