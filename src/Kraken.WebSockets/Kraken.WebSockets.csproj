@@ -8,7 +8,7 @@
     <Description>Public WebSocket API Client for kraken.com </Description>
     <PackageProjectUrl>https://github.com/m4cx/kraken-wsapi-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/m4cx/kraken-wsapi-dotnet.git</RepositoryUrl>
-    <RepositoryType>GIT</RepositoryType>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
