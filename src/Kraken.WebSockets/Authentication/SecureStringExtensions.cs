@@ -4,16 +4,25 @@ using System.Security;
 
 namespace Kraken.WebSockets.Authentication
 {
+    /// <summary>
+    /// Extension methods for <see cref="string"/> and <see cref="SecureString"/>
+    /// </summary>
     public static class SecureStringExtensions
     {
-        public static string ToPlainString(this SecureString secureString)
+        /// <summary>
+        /// Converts a <see cref="SecureString"/> instance to plain <see cref="string"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">value</exception>
+        public static string ToPlainString(this SecureString value)
         {
 #pragma warning disable S1854 // Unused assignments should be removed
             IntPtr unmanagedString = IntPtr.Zero;
 #pragma warning restore S1854 // Unused assignments should be removed
             try
             {
-                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(secureString);
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(value ?? throw new ArgumentNullException(nameof(value)));
                 return Marshal.PtrToStringUni(unmanagedString);
             }
             finally
@@ -22,8 +31,16 @@ namespace Kraken.WebSockets.Authentication
             }
         }
 
+        /// <summary>
+        /// Converts to a <see cref="SecureString"/> instance.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">value</exception>
         public static SecureString ToSecureString(this string value)
         {
+            _ = value ?? throw new ArgumentNullException(nameof(value));
+
             var secureString = new SecureString();
             secureString.Clear();
 

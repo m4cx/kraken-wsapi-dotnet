@@ -54,7 +54,7 @@ namespace Kraken.WebSockets.Tests
         {
             await instance.ConnectAsync();
 
-            socket.Verify(x => x.ConnectAsync());
+            socket.Verify(x => x.ConnectAsync(default));
         }
 
         #endregion
@@ -70,7 +70,7 @@ namespace Kraken.WebSockets.Tests
         {
             var subscribe = new Subscribe(new string[] { "XBT/EUR" }, new SubscribeOptions(SubscribeOptionNames.All));
             await instance.SubscribeAsync(subscribe);
-            socket.Verify(mock => mock.SendAsync(It.Is<Subscribe>(x => x == subscribe)), Times.Once);
+            socket.Verify(mock => mock.SendAsync(It.Is<Subscribe>(x => x == subscribe), default), Times.Once);
         }
 
         #endregion
@@ -144,7 +144,7 @@ namespace Kraken.WebSockets.Tests
         public async Task UnsubscribeAsync_SubscriptionWithChannelId_ThrowsArgumentNullException()
         {
             await instance.UnsubscribeAsync(123);
-            socket.Verify(x => x.SendAsync(It.Is<Unsubscribe>(y => y.ChannelId == 123)));
+            socket.Verify(x => x.SendAsync(It.Is<Unsubscribe>(y => y.ChannelId == 123), default));
         }
 
         #endregion
@@ -164,7 +164,7 @@ namespace Kraken.WebSockets.Tests
             var addOrder = new AddOrderCommand("token", OrderType.Market, Side.Sell, Pair.XBT_EUR, 1);
 
             await instance.AddOrder(addOrder);
-            socket.Verify(x => x.SendAsync(It.Is<AddOrderCommand>(y => y == addOrder)));
+            socket.Verify(x => x.SendAsync(It.Is<AddOrderCommand>(y => y == addOrder), default));
         }
 
         #endregion
@@ -184,7 +184,7 @@ namespace Kraken.WebSockets.Tests
             var cancelOrder = new CancelOrderCommand("token", new[] { "ID1" });
 
             await instance.CancelOrder(cancelOrder);
-            socket.Verify(x => x.SendAsync(It.Is<CancelOrderCommand>(y => y == cancelOrder)));
+            socket.Verify(x => x.SendAsync(It.Is<CancelOrderCommand>(y => y == cancelOrder), default));
         }
 
         #endregion
@@ -436,7 +436,7 @@ namespace Kraken.WebSockets.Tests
         public void Dispose_ShouldCloseSocket()
         {
             instance.Dispose();
-            socket.Verify(s => s.CloseAsync());
+            socket.Verify(s => s.CloseAsync(default));
         }
 
         [Fact]
@@ -449,7 +449,7 @@ namespace Kraken.WebSockets.Tests
             socket.Raise(x => x.DataReceived += null, new KrakenMessageEventArgs(SubscriptionStatus.EventName, TestSocketMessages.SubscriptionStatus1Message));
 
             instance.Dispose();
-            socket.Verify(s => s.SendAsync(It.Is<Unsubscribe>(u => u.ChannelId == 123)));
+            socket.Verify(s => s.SendAsync(It.Is<Unsubscribe>(u => u.ChannelId == 123), default));
         }
 
         [Fact]
@@ -458,7 +458,7 @@ namespace Kraken.WebSockets.Tests
             instance.Dispose();
             instance.Dispose();
 
-            socket.Verify(s => s.CloseAsync(), Times.Once);
+            socket.Verify(s => s.CloseAsync(default), Times.Once);
         }
 
         #endregion
