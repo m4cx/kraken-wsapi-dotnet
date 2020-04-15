@@ -1,3 +1,17 @@
+## [0.5.2](https://github.com/m4cx/kraken-wsapi-dotnet/compare/0.5.0...0.5.2) (2020-04-15)
+
+
+### Bug Fixes
+
+* **kraken-message:** enforce message has a class representation ([fb5e285](https://github.com/m4cx/kraken-wsapi-dotnet/commit/fb5e285))
+
+
+### Features
+
+* **kraken-socket:** pass cancellation-token to underlying socket ([517a77d](https://github.com/m4cx/kraken-wsapi-dotnet/commit/517a77d))
+
+
+
 # [0.5.0](https://github.com/m4cx/kraken-wsapi-dotnet/compare/0.4.0...0.5.0) (2020-04-06)
 
 ### Features
