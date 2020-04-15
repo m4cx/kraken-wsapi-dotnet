@@ -84,7 +84,7 @@ namespace Kraken.WebSockets
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
         public async Task SendAsync<TKrakenMessage>(TKrakenMessage message, CancellationToken cancellationToken = default)
-            where TKrakenMessage : IKrakenMessage
+            where TKrakenMessage : class, IKrakenMessage
         {
             if (webSocket.State == WebSocketState.Open)
             {
