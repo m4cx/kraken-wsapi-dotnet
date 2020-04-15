@@ -51,16 +51,6 @@ namespace Kraken.WebSockets.Messages
             }
 
             Token = token;
-            //if (IsPrivate(name) && string.IsNullOrEmpty(Token))
-            //{
-            //    throw new ArgumentNullException(nameof(token), $"An authentication token has to be provided for private subscriptions.");
-            //}
-
-        }
-
-        private bool IsPrivate(string name)
-        {
-            return SubscribeOptionNames.PrivateNames.Contains(name);
         }
     }
 }

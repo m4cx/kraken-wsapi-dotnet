@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Kraken.WebSockets.Logging
 {
-    internal class LogManager
+    internal static class LogManager
     {
         private static readonly object lockObject = new object();
         private static ILoggerFactory _factory;

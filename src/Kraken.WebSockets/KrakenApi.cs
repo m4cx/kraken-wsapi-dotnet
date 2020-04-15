@@ -15,14 +15,12 @@ namespace Kraken.WebSockets
         public IKrakenApi ConfigureAuthentication(string uri, string apiKey, string apiSecret, int version = 0)
         {
             authenticationClient = new AuthenticationClient(uri, apiKey.ToSecureString(), apiSecret.ToSecureString(), version);
-
             return this;
         }
 
         public IKrakenApi ConfigureWebsocket(string uri)
         {
             websocketUri = uri;
-
             return this;
         }
 

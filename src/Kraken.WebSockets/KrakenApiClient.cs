@@ -33,7 +33,7 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <value>The subscriptions.</value>
         public IDictionary<int, SubscriptionStatus> Subscriptions { get; } = new Dictionary<int, SubscriptionStatus>();
-        
+
 
         /// <summary>
         /// Occurs when system status changed.
@@ -115,6 +115,7 @@ namespace Kraken.WebSockets
             this.socket = socket ?? throw new ArgumentNullException(nameof(socket));
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
+
             // Add watch for incoming messages 
             this.socket.DataReceived += HandleIncomingMessage;
         }
@@ -136,7 +137,7 @@ namespace Kraken.WebSockets
         /// <param name="subscribe">The subscription.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">subscribe</exception>
-        public async Task SubscribeAsync(Subscribe subscribe)
+        public Task SubscribeAsync(Subscribe subscribe)
         {
             if (subscribe == null)
             {
@@ -144,6 +145,11 @@ namespace Kraken.WebSockets
                 throw new ArgumentNullException(nameof(subscribe));
             }
 
+            return SubscribeAsyncInternal(subscribe);
+        }
+
+        private async Task SubscribeAsyncInternal(Subscribe subscribe)
+        {
             logger.LogTrace("Adding subscription: {subscribe}", subscribe);
             await socket.SendAsync(subscribe);
         }
@@ -154,13 +160,18 @@ namespace Kraken.WebSockets
         /// <param name="channelId">The channel identifier.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">subscription</exception>
-        public async Task UnsubscribeAsync(int channelId)
+        public Task UnsubscribeAsync(int channelId)
         {
             if (channelId == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(channelId));
             }
 
+            return UnsubscribeAsyncInternal(channelId);
+        }
+
+        private async Task UnsubscribeAsyncInternal(int channelId)
+        {
             logger.LogTrace("Unsubscribe from subscription with channelId '{channelId}'", channelId);
             await socket.SendAsync(new Unsubscribe(channelId));
         }
@@ -218,7 +229,6 @@ namespace Kraken.WebSockets
             {
                 if (disposing)
                 {
-                    // TODO: Unsubscribe from all active subscriptions
                     if (Subscriptions.Any())
                     {
                         foreach (var subscription in Subscriptions.Keys)
@@ -273,24 +283,10 @@ namespace Kraken.WebSockets
                     break;
 
                 case "private":
-
-                    // handle private content
-                    if (eventArgs.RawContent.Contains(@"""ownTrades"""))
-                    {
-                        var ownTrades = OwnTradesMessage.CreateFromString(eventArgs.RawContent);
-                        OwnTradesReceived.InvokeAll(this, new KrakenPrivateEventArgs<OwnTradesMessage>(ownTrades));
-                    }
-
-                    if (eventArgs.RawContent.Contains(@"""openOrders"""))
-                    {
-                        var openOrders = OpenOrdersMessage.CreateFromString(eventArgs.RawContent);
-                        OpenOrdersReceived.InvokeAll(this, new KrakenPrivateEventArgs<OpenOrdersMessage>(openOrders));
-                    }
-
+                    HandlePrivateContent(eventArgs);
                     break;
 
                 case "data":
-
                     var subscription = Subscriptions.ContainsKey(eventArgs.ChannelId.Value) ? Subscriptions[eventArgs.ChannelId.Value] : null;
                     if (subscription == null)
                     {
@@ -298,47 +294,67 @@ namespace Kraken.WebSockets
                         break;
                     }
 
-                    var dataType = subscription.Subscription.Name;
-
-                    if (dataType == SubscribeOptionNames.Ticker)
-                    {
-                        var tickerMessage = TickerMessage.CreateFromString(eventArgs.RawContent, subscription);
-                        TickerReceived.InvokeAll(this, new TickerEventArgs(subscription.ChannelId.Value, subscription.Pair, tickerMessage));
-                    }
-                    if (dataType == SubscribeOptionNames.OHLC)
-                    {
-                        var ohlcMessage = OhlcMessage.CreateFromString(eventArgs.RawContent);
-                        OhlcReceived.InvokeAll(this, new OhlcEventArgs(subscription.ChannelId.Value, subscription.Pair, ohlcMessage));
-                    }
-                    if (dataType == SubscribeOptionNames.Trade)
-                    {
-                        var tradeMessage = TradeMessage.CreateFromString(eventArgs.RawContent);
-                        TradeReceived.InvokeAll(this, new TradeEventArgs(subscription.ChannelId.Value, subscription.Pair, tradeMessage));
-                    }
-                    if (dataType == SubscribeOptionNames.Spread)
-                    {
-                        var spreadMessage = SpreadMessage.CreateFromString(eventArgs.RawContent);
-                        SpreadReceived.InvokeAll(this, new SpreadEventArgs(subscription.ChannelId.Value, subscription.Pair, spreadMessage));
-                    }
-                    if (dataType == SubscribeOptionNames.Book)
-                    {
-                        if (eventArgs.RawContent.Contains(@"""as"":") && eventArgs.RawContent.Contains(@"""bs"":"))
-                        {
-                            var bookSnapshotMessage = BookSnapshotMessage.CreateFromString(eventArgs.RawContent);
-                            BookSnapshotReceived.InvokeAll(this, new KrakenDataEventArgs<BookSnapshotMessage>(eventArgs.ChannelId.Value, subscription.Pair, bookSnapshotMessage));
-                        }
-                        if (eventArgs.RawContent.Contains(@"""a"":") || eventArgs.RawContent.Contains(@"""b"":"))
-                        {
-                            var bookUpdateMessage = BookUpdateMessage.CreateFromString(eventArgs.RawContent);
-                            BookUpdateReceived.InvokeAll(this, new KrakenDataEventArgs<BookUpdateMessage>(eventArgs.ChannelId.Value, subscription.Pair, bookUpdateMessage));
-                        }
-                    }
-
+                    HandleData(eventArgs, subscription);
                     break;
 
                 default:
                     logger.LogWarning("Could not handle incoming message: {message}", eventArgs.RawContent);
                     break;
+            }
+        }
+
+        private void HandleData(KrakenMessageEventArgs eventArgs, SubscriptionStatus subscription)
+        {
+            var dataType = subscription.Subscription.Name;
+
+            if (dataType == SubscribeOptionNames.Ticker)
+            {
+                var tickerMessage = TickerMessage.CreateFromString(eventArgs.RawContent, subscription);
+                TickerReceived.InvokeAll(this, new TickerEventArgs(subscription.ChannelId.Value, subscription.Pair, tickerMessage));
+            }
+            if (dataType == SubscribeOptionNames.OHLC)
+            {
+                var ohlcMessage = OhlcMessage.CreateFromString(eventArgs.RawContent);
+                OhlcReceived.InvokeAll(this, new OhlcEventArgs(subscription.ChannelId.Value, subscription.Pair, ohlcMessage));
+            }
+            if (dataType == SubscribeOptionNames.Trade)
+            {
+                var tradeMessage = TradeMessage.CreateFromString(eventArgs.RawContent);
+                TradeReceived.InvokeAll(this, new TradeEventArgs(subscription.ChannelId.Value, subscription.Pair, tradeMessage));
+            }
+            if (dataType == SubscribeOptionNames.Spread)
+            {
+                var spreadMessage = SpreadMessage.CreateFromString(eventArgs.RawContent);
+                SpreadReceived.InvokeAll(this, new SpreadEventArgs(subscription.ChannelId.Value, subscription.Pair, spreadMessage));
+            }
+            if (dataType == SubscribeOptionNames.Book)
+            {
+                if (eventArgs.RawContent.Contains(@"""as"":") && eventArgs.RawContent.Contains(@"""bs"":"))
+                {
+                    var bookSnapshotMessage = BookSnapshotMessage.CreateFromString(eventArgs.RawContent);
+                    BookSnapshotReceived.InvokeAll(this, new KrakenDataEventArgs<BookSnapshotMessage>(eventArgs.ChannelId.Value, subscription.Pair, bookSnapshotMessage));
+                }
+                if (eventArgs.RawContent.Contains(@"""a"":") || eventArgs.RawContent.Contains(@"""b"":"))
+                {
+                    var bookUpdateMessage = BookUpdateMessage.CreateFromString(eventArgs.RawContent);
+                    BookUpdateReceived.InvokeAll(this, new KrakenDataEventArgs<BookUpdateMessage>(eventArgs.ChannelId.Value, subscription.Pair, bookUpdateMessage));
+                }
+            }
+        }
+
+        private void HandlePrivateContent(KrakenMessageEventArgs eventArgs)
+        {
+            // handle private content
+            if (eventArgs.RawContent.Contains(@"""ownTrades"""))
+            {
+                var ownTrades = OwnTradesMessage.CreateFromString(eventArgs.RawContent);
+                OwnTradesReceived.InvokeAll(this, new KrakenPrivateEventArgs<OwnTradesMessage>(ownTrades));
+            }
+
+            if (eventArgs.RawContent.Contains(@"""openOrders"""))
+            {
+                var openOrders = OpenOrdersMessage.CreateFromString(eventArgs.RawContent);
+                OpenOrdersReceived.InvokeAll(this, new KrakenPrivateEventArgs<OpenOrdersMessage>(openOrders));
             }
         }
 

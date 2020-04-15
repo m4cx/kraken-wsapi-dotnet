@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Kraken.WebSockets.Events;
 using Kraken.WebSockets.Messages;
@@ -24,19 +25,20 @@ namespace Kraken.WebSockets
         /// Connect to the websocket server.
         /// </summary>
         /// <returns>The connect.</returns>
-        Task ConnectAsync();
+        Task ConnectAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sends the message throught the open websocket.
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
-        Task SendAsync<TKrakenMessage>(TKrakenMessage message) where TKrakenMessage : IKrakenMessage;
+        Task SendAsync<TKrakenMessage>(TKrakenMessage message, CancellationToken cancellationToken = default) 
+            where TKrakenMessage : class, IKrakenMessage;
 
         /// <summary>
         /// Closes the websocket.
         /// </summary>
         /// <returns>The async.</returns>
-        Task CloseAsync();
+        Task CloseAsync(CancellationToken cancellationToken = default);
     }
 }

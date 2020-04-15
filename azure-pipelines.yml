@@ -1,7 +1,7 @@
 variables:
     major: 0
     minor: 5
-    patch: 0
+    patch: 2
     versionNumber: $(major).$(minor).$(patch)
     debugVersionNumber: $(versionNumber)-b$(Build.BuildId)  
 
@@ -23,7 +23,7 @@ jobs:
   displayName: "Build Pre-Release"
   steps:
   # Restore NuGet Packages
-  - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
+  - script: 'dotnet restore "Kraken.WebSockets.sln"'
     displayName: "Restore NuGet Packages"
   - task: SonarCloudPrepare@1
     inputs:
@@ -33,14 +33,14 @@ jobs:
       projectKey: 'kraken-wsapi-dotnet'
       projectName: 'kraken-wsapi-dotnet'
   # Build all projects with specific version number
-  - script: 'dotnet build "src/Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(debugVersionNumber)'
+  - script: 'dotnet build "Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(debugVersionNumber)'
     displayName: 'dotnet build'
   # Execute defined tests and collect code coverage
   - task: DotNetCoreCLI@2
     displayName: 'dotnet test'
     inputs:
       command: test
-      projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
+      projects: test/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
       arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:./codecoverage.runsettings'
   # Create NuGet Package
   - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(debugVersionNumber)
@@ -71,7 +71,7 @@ jobs:
   dependsOn: "linting"
   steps:
   # Restore NuGet Packages
-  - script: 'dotnet restore "src/Kraken.WebSockets.sln"'
+  - script: 'dotnet restore "Kraken.WebSockets.sln"'
     displayName: "Restore NuGet Packages"
   - task: SonarCloudPrepare@1
     inputs:
@@ -81,14 +81,14 @@ jobs:
       projectKey: 'kraken-wsapi-dotnet'
       projectName: 'kraken-wsapi-dotnet'
   # Build all projects with specific version number
-  - script: 'dotnet build "src/Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(versionNumber)'
+  - script: 'dotnet build "Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(versionNumber)'
     displayName: 'dotnet build'
   # Execute defined tests and collect code coverage
   - task: DotNetCoreCLI@2
     displayName: 'dotnet test'
     inputs:
       command: test
-      projects: src/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
+      projects: test/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
       arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:./codecoverage.runsettings'
   # Create NuGet Package
   - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)

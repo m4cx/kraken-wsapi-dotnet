@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Kraken.WebSockets.Authentication
+﻿namespace Kraken.WebSockets.Authentication
 {
     public class AuthToken
     {

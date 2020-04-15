@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Net.WebSockets;
 using Kraken.WebSockets.Messages;
+using Kraken.WebSockets.Sockets;
 
 namespace Kraken.WebSockets
 {
     /// <summary>
     /// Factory responsible for creating <see cref="IKrakenApiClient"/> instances
     /// </summary>
-    /// <seealso cref="Kraken.WebSockets.IKrakenApiClientFactory" />
+    /// <seealso cref="IKrakenApiClientFactory" />
     internal class KrakenApiClientFactory : IKrakenApiClientFactory
     {
         private readonly IKrakenMessageSerializer serializer;
@@ -33,7 +35,7 @@ namespace Kraken.WebSockets
                 throw new ArgumentOutOfRangeException(nameof(uri));
             }
 
-            var socket = new KrakenWebSocket(uri, serializer);
+            var socket = new KrakenSocket(uri, serializer, new DefaultWebSocket(new ClientWebSocket()));
             return new KrakenApiClient(socket, serializer);
         }
     }

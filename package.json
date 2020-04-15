@@ -1,6 +1,6 @@
 {
   "name": "kraken-wsapi-dotnet",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "C# / .NET Standard Client for connecting to the public kraken.com WebSocket API",
   "main": "index.js",
   "scripts": {

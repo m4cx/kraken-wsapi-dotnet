@@ -11,5 +11,5 @@ node_modules/
 TestResults/
 *.DotSettings
 
-src/Kraken.WebSockets.Sample/Properties/launchSettings.json
+launchSettings.json
 .vscode/
