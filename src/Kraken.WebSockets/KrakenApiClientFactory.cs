@@ -35,7 +35,7 @@ namespace Kraken.WebSockets
                 throw new ArgumentOutOfRangeException(nameof(uri));
             }
 
-            var socket = new KrakenWebSocket(uri, serializer, new DefaultWebSocket(new ClientWebSocket()));
+            var socket = new KrakenSocket(uri, serializer, new DefaultWebSocket(new ClientWebSocket()));
             return new KrakenApiClient(socket, serializer);
         }
     }

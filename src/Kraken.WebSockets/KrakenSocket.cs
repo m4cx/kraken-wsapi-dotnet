@@ -15,9 +15,9 @@ namespace Kraken.WebSockets
     /// <summary>
     /// Kraken websocket.
     /// </summary>
-    public sealed class KrakenWebSocket : IKrakenSocket
+    public sealed class KrakenSocket : IKrakenSocket
     {
-        private static readonly ILogger<KrakenWebSocket> logger = LogManager.CreateLogger<KrakenWebSocket>();
+        private static readonly ILogger<KrakenSocket> logger = LogManager.CreateLogger<KrakenSocket>();
         private static readonly Encoding DEFAULT_ENCODING = Encoding.UTF8;
 
 
@@ -48,7 +48,7 @@ namespace Kraken.WebSockets
         /// or
         /// webSocket
         /// </exception>
-        public KrakenWebSocket(string uri, IKrakenMessageSerializer serializer, IWebSocket webSocket)
+        public KrakenSocket(string uri, IKrakenMessageSerializer serializer, IWebSocket webSocket)
         {
             this.uri = uri ?? throw new ArgumentNullException(nameof(uri));
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
@@ -116,7 +116,9 @@ namespace Kraken.WebSockets
 
         #region Private Helper
 
+#pragma warning disable S3241 // Methods should not return values that are never used
         private async Task StartListening(CancellationToken cancellationToken = default)
+#pragma warning restore S3241 // Methods should not return values that are never used
         {
             try
             {
