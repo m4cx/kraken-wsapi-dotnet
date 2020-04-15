@@ -2,9 +2,6 @@
 {
     public interface IKrakenMessage
     {
-        string Event
-        {
-            get;
-        }
+        string Event { get; }
     }
 }

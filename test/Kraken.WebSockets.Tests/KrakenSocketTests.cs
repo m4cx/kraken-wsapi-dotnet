@@ -13,20 +13,20 @@ using Xunit;
 namespace Kraken.WebSockets.Tests
 {
     [ExcludeFromCodeCoverage]
-    public class KrakenWebSocketTests
+    public class KrakenSocketTests
     {
         private readonly string uri;
         private readonly Mock<IKrakenMessageSerializer> serializer;
         private readonly Mock<IWebSocket> webSocket;
-        private readonly KrakenWebSocket instance;
+        private readonly KrakenSocket instance;
 
-        public KrakenWebSocketTests()
+        public KrakenSocketTests()
         {
             LogManager.LoggerFactory = new NullLoggerFactory();
             uri = "ws://localhost:29100";
             serializer = new Mock<IKrakenMessageSerializer>();
             webSocket = new Mock<IWebSocket>();
-            instance = new KrakenWebSocket(uri, serializer.Object, webSocket.Object);
+            instance = new KrakenSocket(uri, serializer.Object, webSocket.Object);
         }
 
         #region Ctor
@@ -34,19 +34,19 @@ namespace Kraken.WebSockets.Tests
         [Fact]
         public void Ctor_UriNull_ThrowsArgumentNullException()
         {
-            Assert.Equal("uri", Assert.Throws<ArgumentNullException>(() => new KrakenWebSocket(null, serializer.Object, webSocket.Object)).ParamName);
+            Assert.Equal("uri", Assert.Throws<ArgumentNullException>(() => new KrakenSocket(null, serializer.Object, webSocket.Object)).ParamName);
         }
 
         [Fact]
         public void Ctor_SerializerNull_ThrowsArgumentNullException()
         {
-            Assert.Equal("serializer", Assert.Throws<ArgumentNullException>(() => new KrakenWebSocket("ws://test.example.com", null, webSocket.Object)).ParamName);
+            Assert.Equal("serializer", Assert.Throws<ArgumentNullException>(() => new KrakenSocket("ws://test.example.com", null, webSocket.Object)).ParamName);
         }
 
         [Fact]
         public void Ctor_WebSocketNull_ThrowsArgumentNullException()
         {
-            Assert.Equal("webSocket", Assert.Throws<ArgumentNullException>(() => new KrakenWebSocket("ws://test.example.com", serializer.Object, null)).ParamName);
+            Assert.Equal("webSocket", Assert.Throws<ArgumentNullException>(() => new KrakenSocket("ws://test.example.com", serializer.Object, null)).ParamName);
         }
 
         [Fact]

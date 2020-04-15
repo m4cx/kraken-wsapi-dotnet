@@ -32,9 +32,6 @@
     <ProjectReference Include="..\..\src\Kraken.WebSockets\Kraken.WebSockets.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="UnitTest1.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="data\addOrder.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

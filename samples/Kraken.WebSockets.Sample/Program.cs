@@ -30,7 +30,7 @@ namespace Kraken.WebSockets.Sample
                 .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
                 .CreateLogger();
 
-            new LoggerFactory()
+            _ = new LoggerFactory()
                 .AddKrakenWebSockets()
                 .AddSerilog(logger);
 

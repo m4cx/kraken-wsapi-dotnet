@@ -32,7 +32,8 @@ namespace Kraken.WebSockets
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
-        Task SendAsync<TKrakenMessage>(TKrakenMessage message, CancellationToken cancellationToken = default) where TKrakenMessage : IKrakenMessage;
+        Task SendAsync<TKrakenMessage>(TKrakenMessage message, CancellationToken cancellationToken = default) 
+            where TKrakenMessage : class, IKrakenMessage;
 
         /// <summary>
         /// Closes the websocket.
