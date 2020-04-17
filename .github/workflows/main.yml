@@ -1,9 +1,9 @@
 name: kraken-wsapi-dotnet-ci
 
-on: push
+on: [push, pull_request]
 
 jobs:
-  build:
+  build-pre-release:
     runs-on: ubuntu-latest
     env:
       NUGET_SERVER: https://api.nuget.org/v3/index.json
@@ -25,9 +25,9 @@ jobs:
         with:
           dotnet-version: 3.1.201
 
-# ======================================
-# Build and publish pre-release
-# --------------------------------------
+      # ======================================
+      # Build and publish pre-release
+      # --------------------------------------
       - name: Build pre-release with dotnet
         run: dotnet build "Kraken.WebSockets.sln" --configuration Release -p:Version=${{ format('{0}-b{2}.{1}', steps.package-version.outputs.version, steps.vars.outputs.sha_short, github.run_number) }}
 
@@ -39,14 +39,36 @@ jobs:
         shell: bash
         run: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build -p:Version=${{ format('{0}-b{2}.{1}', steps.package-version.outputs.version, steps.vars.outputs.sha_short, github.run_number) }} --output $GITHUB_WORKSPACE/publish
 
-      - name: NuGet Push pre-release
-        id: nuget-push
-        run: |
-          dotnet nuget list source
-          dotnet nuget push **/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source "nuget.org"
-# ======================================
+      # ======================================
       - name: upload
         uses: actions/upload-artifact@master
         with:
           name: artifacts
           path: ./publish
+
+  analysis:
+    needs: build-pre-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Execute Pipeline for Sonarcloud analysis'
+        uses: Azure/pipelines@releases/v1
+        with:
+          azure-devops-project-url: 'https://macx.visualstudio.com/kraken-wsapi-dotnet'
+          azure-pipeline-name: 'm4cx.kraken-wsapi-dotnet' 
+          azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
+
+  deploy:
+    if: github.ref == 'develop'
+    needs: [build-pre-release, analysis]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Download artifacts"
+        uses: actions/download-artifact@master
+        with:
+          name: artifacts
+
+      - name: NuGet Push
+        id: nuget-push
+        run: |
+          dotnet nuget list source
+          dotnet nuget push **/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source "nuget.org"
