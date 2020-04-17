@@ -8,7 +8,7 @@
             <!-- Match assembly file paths: -->
             <ModulePaths>
               <Include>
-                <ModulePath>.*\Kraken.WebSockets.dll</ModulePath>
+                <ModulePath>.*Kraken.WebSockets.dll</ModulePath>
               </Include>
               <Exclude>
                 <ModulePath>.*tests.dll</ModulePath>

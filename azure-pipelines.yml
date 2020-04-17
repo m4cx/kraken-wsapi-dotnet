@@ -1,111 +1,43 @@
-variables:
-    major: 0
-    minor: 5
-    patch: 2
-    versionNumber: $(major).$(minor).$(patch)
-    debugVersionNumber: $(versionNumber)-b$(Build.BuildId)  
-
 jobs:
-- job: "linting"
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  # Lint commits
-  - script: npm install 
-  - script: ./node_modules/.bin/commitlint-azure-pipelines
-  
-  # Pre-Release Build  
-- job: "BuildPreRelease"
-  dependsOn: "linting"
-  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
-  pool:
-    vmImage: 'vs2017-win2016'
-  displayName: "Build Pre-Release"
-  steps:
-  # Restore NuGet Packages
-  - script: 'dotnet restore "Kraken.WebSockets.sln"'
-    displayName: "Restore NuGet Packages"
-  - task: SonarCloudPrepare@1
-    inputs:
-      SonarCloud: 'SonarCloud M4cX'
-      organization: 'm4cx-github'
-      scannerMode: 'MSBuild'
-      projectKey: 'kraken-wsapi-dotnet'
-      projectName: 'kraken-wsapi-dotnet'
-  # Build all projects with specific version number
-  - script: 'dotnet build "Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(debugVersionNumber)'
-    displayName: 'dotnet build'
-  # Execute defined tests and collect code coverage
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet test'
-    inputs:
-      command: test
-      projects: test/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
-      arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:./codecoverage.runsettings'
-  # Create NuGet Package
-  - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(debugVersionNumber)
-    displayName: "Create NuGet Package"
-  - task: CopyFiles@2
-    displayName: 'Copy Files to staging'
-    inputs:
-      SourceFolder: "./build"
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    inputs:
-      pathtoPublish: "$(Build.ArtifactStagingDirectory)"
-      artifactName: "drop"
-  - task: SonarCloudAnalyze@1
+  - job: "CodeAnalysis"
+    pool:
+      vmImage: "windows-latest"
+    displayName: "Code Analysis with SonarCloud"
+    steps:
+      # Restore NuGet Packages
+      - script: 'dotnet restore "Kraken.WebSockets.sln"'
+        displayName: "Restore NuGet Packages"
 
-  - task: SonarCloudPublish@1
-    inputs:
-      pollingTimeoutSec: '300'
+      - task: SonarCloudPrepare@1
+        inputs:
+          SonarCloud: "SonarCloud M4cX"
+          organization: "m4cx-github"
+          scannerMode: "MSBuild"
+          projectKey: "kraken-wsapi-dotnet"
+          projectName: "kraken-wsapi-dotnet"
 
+      # Build all projects with specific version number
+      - script: 'dotnet build "Kraken.WebSockets.sln" -c Release --no-restore'
+        displayName: "dotnet build"
+      # Execute defined tests and collect code coverage
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet test"
+        inputs:
+          command: test
+          projects: test/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
+          arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:./codecoverage.runsettings'
+      - task: CopyFiles@2
+        displayName: "Copy Files to staging"
+        inputs:
+          SourceFolder: "./build"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)"
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifact: drop"
+        inputs:
+          pathtoPublish: "$(Build.ArtifactStagingDirectory)"
+          artifactName: "drop"
+      - task: SonarCloudAnalyze@1
 
-# Release Build
-- job: "BuildRelease"
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
-  pool:
-    vmImage: 'vs2017-win2016'
-  displayName: "Build Release"
-  dependsOn: "linting"
-  steps:
-  # Restore NuGet Packages
-  - script: 'dotnet restore "Kraken.WebSockets.sln"'
-    displayName: "Restore NuGet Packages"
-  - task: SonarCloudPrepare@1
-    inputs:
-      SonarCloud: 'SonarCloud M4cX'
-      organization: 'm4cx-github'
-      scannerMode: 'MSBuild'
-      projectKey: 'kraken-wsapi-dotnet'
-      projectName: 'kraken-wsapi-dotnet'
-  # Build all projects with specific version number
-  - script: 'dotnet build "Kraken.WebSockets.sln" -c Release --no-restore -p:Version=$(versionNumber)'
-    displayName: 'dotnet build'
-  # Execute defined tests and collect code coverage
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet test'
-    inputs:
-      command: test
-      projects: test/Kraken.WebSockets.Tests/Kraken.WebSockets.Tests.csproj
-      arguments: '--no-restore --no-build -c Release --collect "Code coverage" --settings:./codecoverage.runsettings'
-  # Create NuGet Package
-  - script: dotnet pack "src/Kraken.WebSockets/Kraken.WebSockets.csproj" -c Release --no-build --output "$(Build.ArtifactStagingDirectory)" -p:Version=$(versionNumber)
-    displayName: "Create NuGet Package"
-  - task: CopyFiles@2
-    displayName: 'Copy Files to staging'
-    inputs:
-      SourceFolder: "./build"
-      TargetFolder: '$(Build.ArtifactStagingDirectory)'
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    inputs:
-      pathtoPublish: "$(Build.ArtifactStagingDirectory)"
-      artifactName: "drop"
-  - task: SonarCloudAnalyze@1
-
-  - task: SonarCloudPublish@1
-    inputs:
-      pollingTimeoutSec: '300'
-
+      - task: SonarCloudPublish@1
+        inputs:
+          pollingTimeoutSec: "300"
